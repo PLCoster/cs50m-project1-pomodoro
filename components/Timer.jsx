@@ -85,6 +85,9 @@ export default function Timer() {
         setWorkMins={setWorkMins}
         breakMins={breakMins}
         setBreakMins={setBreakMins}
+        workPhase={workPhase}
+        timerRunning={timerRunning}
+        setCurrentTimerSecs={setCurrentTimerSecs}
       />
       <TimerClock
         currentTimerSecs={currentTimerSecs}
