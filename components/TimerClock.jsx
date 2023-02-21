@@ -22,21 +22,33 @@ function TimerClock({
   setWorkPhase,
   workPhase,
   resetTimer,
+  clickSound,
 }) {
   return (
     <View>
       <Text>{secondsToClockString(currentTimerSecs)}</Text>
       <Button
         title={timerRunning ? 'Pause' : 'Start'}
-        onPress={() => setTimerRunning(!timerRunning)}
+        onPress={() => {
+          clickSound.playAsync();
+          setTimerRunning(!timerRunning);
+        }}
       ></Button>
       <Button
         title={workPhase ? 'Skip to Break' : 'Skip Break'}
-        onPress={() => setWorkPhase(!workPhase)}
+        onPress={() => {
+          clickSound.playAsync();
+          setWorkPhase(!workPhase);
+        }}
       ></Button>
-      <Button title="Reset" onPress={() => resetTimer()}></Button>
+      <Button
+        title="Reset"
+        onPress={() => {
+          clickSound.playAsync();
+          resetTimer();
+        }}
+      ></Button>
       <Text>{workPhase ? 'WORKING' : 'RESTING'}</Text>
-      {/* !!! Add buttons to skip to the next phase, and reset the timer completely here */}
     </View>
   );
 }
@@ -48,6 +60,7 @@ TimerClock.propTypes = {
   setWorkPhase: PropTypes.func.isRequired,
   workPhase: PropTypes.bool.isRequired,
   resetTimer: PropTypes.func.isRequired,
+  clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
 };
 
 export default TimerClock;

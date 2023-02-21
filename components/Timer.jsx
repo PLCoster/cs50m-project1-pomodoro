@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Audio } from 'expo-av';
 
 import TimerSettings from './TimerSettings';
 import TimerClock from './TimerClock';
@@ -17,6 +18,14 @@ export default function Timer() {
 
   const currentTimerSecsRef = useRef(currentTimerSecs);
   const currentTimeoutRef = useRef();
+
+  const [clickSound, setClickSound] = useState({
+    playAsync: () => {
+      console.log('No sounds loaded');
+    },
+  });
+
+  console.log(clickSound);
 
   const resetTimer = () => {
     setTimerRunning(false);
@@ -40,6 +49,25 @@ export default function Timer() {
       }, nextTimer - Date.now());
     };
   };
+
+  // Effect to load sounds on initial Timer mount
+  useEffect(() => {
+    (async function loadClickSound() {
+      try {
+        const { sound: click } = await Audio.Sound.createAsync(
+          require('../assets/sounds/fingersnap.mp3'),
+        );
+        console.log('Sounds Loaded!');
+        setClickSound(click);
+      } catch (err) {
+        console.error('Error when trying to load sounds: ', err);
+      }
+    })();
+
+    return () => {
+      clickSound ? clickSound.unloadAsync() : null;
+    };
+  }, []);
 
   // Effect to update timer countdown when phase switches work <-> break
   useEffect(() => {
@@ -88,6 +116,7 @@ export default function Timer() {
         workPhase={workPhase}
         timerRunning={timerRunning}
         setCurrentTimerSecs={setCurrentTimerSecs}
+        clickSound={clickSound}
       />
       <TimerClock
         currentTimerSecs={currentTimerSecs}
@@ -96,6 +125,7 @@ export default function Timer() {
         workPhase={workPhase}
         setWorkPhase={setWorkPhase}
         resetTimer={resetTimer}
+        clickSound={clickSound}
       />
     </View>
   );

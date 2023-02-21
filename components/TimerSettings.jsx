@@ -22,6 +22,7 @@ function TimerSettings({
   workPhase,
   timerRunning,
   setCurrentTimerSecs,
+  clickSound,
 }) {
   console.log('!!! RENDERING TimerSettings - try to memoise?');
   const [workingPeriodInputString, setWorkPeriodString] = useState(
@@ -104,7 +105,8 @@ function TimerSettings({
       <Button
         title="+"
         accessibilityLabel="Increment work period"
-        onPress={() =>
+        onPress={() => {
+          clickSound.playAsync();
           setWorkMins((prevWorkMins) => {
             const updatedWorkMins = Math.min(
               prevWorkMins + 1,
@@ -116,14 +118,15 @@ function TimerSettings({
             }
 
             return updatedWorkMins;
-          })
-        }
+          });
+        }}
         disabled={workMins >= MAX_TIMER_PERIOD ? true : false}
       ></Button>
       <Button
         title="-"
         accessibilityLabel="Decrement work period"
-        onPress={() =>
+        onPress={() => {
+          clickSound.playAsync();
           setWorkMins((prevWorkMins) => {
             const updatedWorkMins = Math.max(
               prevWorkMins - 1,
@@ -135,8 +138,8 @@ function TimerSettings({
             }
 
             return updatedWorkMins;
-          })
-        }
+          });
+        }}
         disabled={workMins <= MIN_TIMER_PERIOD ? true : false}
       ></Button>
       <Text>
@@ -156,7 +159,8 @@ function TimerSettings({
       <Button
         title="+"
         accessibilityLabel="Increment break period"
-        onPress={() =>
+        onPress={() => {
+          clickSound.playAsync();
           setBreakMins((prevBreakMins) => {
             const updatedBreakMins = Math.min(
               prevBreakMins + 1,
@@ -168,14 +172,15 @@ function TimerSettings({
             }
 
             return updatedBreakMins;
-          })
-        }
+          });
+        }}
         disabled={breakMins >= MAX_TIMER_PERIOD ? true : false}
       ></Button>
       <Button
         title="-"
         accessibilityLabel="Decrement break period"
-        onPress={() =>
+        onPress={() => {
+          clickSound.playAsync();
           setBreakMins((prevBreakMins) => {
             const updatedBreakMins = Math.max(
               prevBreakMins - 1,
@@ -187,8 +192,8 @@ function TimerSettings({
             }
 
             return updatedBreakMins;
-          })
-        }
+          });
+        }}
         disabled={breakMins <= MIN_TIMER_PERIOD ? true : false}
       ></Button>
     </View>
@@ -203,6 +208,7 @@ TimerSettings.propTypes = {
   workPhase: PropTypes.bool.isRequired,
   timerRunning: PropTypes.bool.isRequired,
   setCurrentTimerSecs: PropTypes.func.isRequired,
+  clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
 };
 
 export default TimerSettings;
