@@ -5,8 +5,21 @@ import { Audio } from 'expo-av';
 import TimerSettings from './TimerSettings';
 import TimerClock from './TimerClock';
 
+import vibrate from '../utils/vibrate';
+
 const DEFAULT_WORK_MINS = 25;
 const DEFAULT_BREAK_MINS = 5;
+const MIN_TIMER_PERIOD = 1;
+const MAX_TIMER_PERIOD = 60;
+
+const unloadedSound = {
+  playAsync: () => {
+    console.log('No sounds loaded');
+  },
+  unloadAsync: () => {
+    console.log('No sounds loaded to be unloaded');
+  },
+};
 
 export default function Timer() {
   const [workMins, setWorkMins] = useState(DEFAULT_WORK_MINS);
@@ -19,13 +32,8 @@ export default function Timer() {
   const currentTimerSecsRef = useRef(currentTimerSecs);
   const currentTimeoutRef = useRef();
 
-  const [clickSound, setClickSound] = useState({
-    playAsync: () => {
-      console.log('No sounds loaded');
-    },
-  });
-
-  console.log(clickSound);
+  const [clickSound, setClickSound] = useState(unloadedSound);
+  const [alarmSound, setAlarmSound] = useState(unloadedSound);
 
   const resetTimer = () => {
     setTimerRunning(false);
@@ -34,6 +42,26 @@ export default function Timer() {
     setBreakMins(DEFAULT_BREAK_MINS);
     setCurrentTimerSecs(DEFAULT_WORK_MINS * 60);
     currentTimerSecsRef.current = DEFAULT_WORK_MINS * 60;
+  };
+
+  const updateTimer = (value, updateWorkTimer) => {
+    const validTime = Math.min(
+      Math.max(MIN_TIMER_PERIOD, value),
+      MAX_TIMER_PERIOD,
+    );
+    if (updateWorkTimer) {
+      setWorkMins(validTime);
+    } else {
+      setBreakMins(validTime);
+    }
+
+    if (
+      !timerRunning &&
+      ((updateWorkTimer && workPhase) || (!updateWorkTimer && !workPhase))
+    ) {
+      setCurrentTimerSecs(validTime * 60);
+      currentTimerSecsRef.current = validTime * 60;
+    }
   };
 
   // Helper function that repeatedly sets an interval that should tick
@@ -57,15 +85,21 @@ export default function Timer() {
         const { sound: click } = await Audio.Sound.createAsync(
           require('../assets/sounds/fingersnap.mp3'),
         );
+        const { sound: alarm } = await Audio.Sound.createAsync(
+          require('../assets/sounds/watch_alarm.mp3'),
+        );
+
         console.log('Sounds Loaded!');
         setClickSound(click);
+        setAlarmSound(alarm);
       } catch (err) {
         console.error('Error when trying to load sounds: ', err);
       }
     })();
 
     return () => {
-      clickSound ? clickSound.unloadAsync() : null;
+      clickSound.unloadAsync();
+      alarmSound.unloadAsync();
     };
   }, []);
 
@@ -86,11 +120,19 @@ export default function Timer() {
         if (currentTimerSecsRef.current > 0) {
           // Continue current timer countdown
           currentTimerSecsRef.current -= 1;
+
+          // Time is going to reach 0, play alarm and vibrate
+          if (currentTimerSecsRef.current === 0) {
+            alarmSound.playAsync();
+            vibrate();
+          }
+
           setCurrentTimerSecs((prevSeconds) => {
             return prevSeconds - 1;
           });
         } else {
           // Timer has reached 0, switch timer phase
+
           setWorkPhase((workPhase) => !workPhase);
         }
       }, 1000)();
@@ -98,7 +140,6 @@ export default function Timer() {
 
     // Effect Cleanup when Timer Stops or Component Unmounts
     return () => {
-      console.log('CLEARING TIMEOUT');
       clearTimeout(currentTimeoutRef.current);
       currentTimeoutRef.current = null;
     };
@@ -110,12 +151,8 @@ export default function Timer() {
       <View style={styles.hr} />
       <TimerSettings
         workMins={workMins}
-        setWorkMins={setWorkMins}
         breakMins={breakMins}
-        setBreakMins={setBreakMins}
-        workPhase={workPhase}
-        timerRunning={timerRunning}
-        setCurrentTimerSecs={setCurrentTimerSecs}
+        updateTimer={updateTimer}
         clickSound={clickSound}
       />
       <TimerClock

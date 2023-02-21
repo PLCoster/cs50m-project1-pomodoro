@@ -2,28 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Button, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 
-const MIN_TIMER_PERIOD = 1;
-const MAX_TIMER_PERIOD = 60;
 const numChars = new Set(
   Array(10)
     .fill(0)
     .map((_, i) => i.toString()),
 );
 
+const MIN_TIMER_PERIOD = 1;
+const MAX_TIMER_PERIOD = 60;
+
 /**
  * TimerSettings component contains all the timer setting controls, e.g:
  * - Set Working Time and Break Time lengths
  */
-function TimerSettings({
-  workMins,
-  setWorkMins,
-  breakMins,
-  setBreakMins,
-  workPhase,
-  timerRunning,
-  setCurrentTimerSecs,
-  clickSound,
-}) {
+function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
   console.log('!!! RENDERING TimerSettings - try to memoise?');
   const [workingPeriodInputString, setWorkPeriodString] = useState(
     workMins.toString(),
@@ -68,21 +60,15 @@ function TimerSettings({
         ? Math.min(parseInt(workingPeriodInputString), MAX_TIMER_PERIOD)
         : workMins;
 
-      setWorkMins(newWorkMins);
+      updateTimer(newWorkMins, workMinsInput);
       setWorkPeriodString(newWorkMins.toString());
-      if (!timerRunning && workPhase) {
-        setCurrentTimerSecs(newWorkMins * 60);
-      }
     } else {
       const newBreakMins = breakPeriodInputString
         ? Math.min(parseInt(breakPeriodInputString), MAX_TIMER_PERIOD)
         : breakMins;
 
-      setBreakMins(newBreakMins);
+      updateTimer(newBreakMins, workMinsInput);
       setBreakPeriodString(newBreakMins.toString());
-      if (!timerRunning && !workPhase) {
-        setCurrentTimerSecs(newBreakMins * 60);
-      }
     }
   }
 
@@ -107,18 +93,7 @@ function TimerSettings({
         accessibilityLabel="Increment work period"
         onPress={() => {
           clickSound.playAsync();
-          setWorkMins((prevWorkMins) => {
-            const updatedWorkMins = Math.min(
-              prevWorkMins + 1,
-              MAX_TIMER_PERIOD,
-            );
-
-            if (!timerRunning && workPhase) {
-              setCurrentTimerSecs(updatedWorkMins * 60);
-            }
-
-            return updatedWorkMins;
-          });
+          updateTimer(workMins + 1, true);
         }}
         disabled={workMins >= MAX_TIMER_PERIOD ? true : false}
       ></Button>
@@ -127,18 +102,7 @@ function TimerSettings({
         accessibilityLabel="Decrement work period"
         onPress={() => {
           clickSound.playAsync();
-          setWorkMins((prevWorkMins) => {
-            const updatedWorkMins = Math.max(
-              prevWorkMins - 1,
-              MIN_TIMER_PERIOD,
-            );
-
-            if (!timerRunning && workPhase) {
-              setCurrentTimerSecs(updatedWorkMins * 60);
-            }
-
-            return updatedWorkMins;
-          });
+          updateTimer(workMins - 1, true);
         }}
         disabled={workMins <= MIN_TIMER_PERIOD ? true : false}
       ></Button>
@@ -161,18 +125,7 @@ function TimerSettings({
         accessibilityLabel="Increment break period"
         onPress={() => {
           clickSound.playAsync();
-          setBreakMins((prevBreakMins) => {
-            const updatedBreakMins = Math.min(
-              prevBreakMins + 1,
-              MAX_TIMER_PERIOD,
-            );
-
-            if (!timerRunning && !workPhase) {
-              setCurrentTimerSecs(updatedBreakMins * 60);
-            }
-
-            return updatedBreakMins;
-          });
+          updateTimer(breakMins + 1, false);
         }}
         disabled={breakMins >= MAX_TIMER_PERIOD ? true : false}
       ></Button>
@@ -181,18 +134,7 @@ function TimerSettings({
         accessibilityLabel="Decrement break period"
         onPress={() => {
           clickSound.playAsync();
-          setBreakMins((prevBreakMins) => {
-            const updatedBreakMins = Math.max(
-              prevBreakMins - 1,
-              MIN_TIMER_PERIOD,
-            );
-
-            if (!timerRunning && !workPhase) {
-              setCurrentTimerSecs(updatedBreakMins * 60);
-            }
-
-            return updatedBreakMins;
-          });
+          updateTimer(breakMins - 1, false);
         }}
         disabled={breakMins <= MIN_TIMER_PERIOD ? true : false}
       ></Button>
@@ -202,12 +144,8 @@ function TimerSettings({
 
 TimerSettings.propTypes = {
   workMins: PropTypes.number.isRequired,
-  setWorkMins: PropTypes.func.isRequired,
   breakMins: PropTypes.number.isRequired,
-  setBreakMins: PropTypes.func.isRequired,
-  workPhase: PropTypes.bool.isRequired,
-  timerRunning: PropTypes.bool.isRequired,
-  setCurrentTimerSecs: PropTypes.func.isRequired,
+  updateTimer: PropTypes.func.isRequired,
   clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
 };
 
