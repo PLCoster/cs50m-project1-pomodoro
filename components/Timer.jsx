@@ -1,23 +1,35 @@
-import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import TimerSettings from './TimerSettings';
 import TimerClock from './TimerClock';
 
-export default function Timer() {
-  const [workMins, setWorkMins] = useState(1);
-  const [breakMins, setBreakMins] = useState(1);
+const DEFAULT_WORK_MINS = 25;
+const DEFAULT_BREAK_MINS = 5;
 
-  const [currentTimerSecs, setCurrentTimerSecs] = useState(15);
+export default function Timer() {
+  const [workMins, setWorkMins] = useState(DEFAULT_WORK_MINS);
+  const [breakMins, setBreakMins] = useState(DEFAULT_BREAK_MINS);
+
+  const [currentTimerSecs, setCurrentTimerSecs] = useState(workMins * 60);
   const [workPhase, setWorkPhase] = useState(true);
   const [timerRunning, setTimerRunning] = useState(false);
 
   const currentTimerSecsRef = useRef(currentTimerSecs);
-  const currentTimeoutRef = useRef(false);
+  const currentTimeoutRef = useRef();
 
-  const toggleTimerRunning = () => setTimerRunning(!timerRunning);
+  const resetTimer = () => {
+    setTimerRunning(false);
+    setWorkPhase(true);
+    setWorkMins(DEFAULT_WORK_MINS);
+    setBreakMins(DEFAULT_BREAK_MINS);
+    setCurrentTimerSecs(DEFAULT_WORK_MINS * 60);
+    currentTimerSecsRef.current = DEFAULT_WORK_MINS * 60;
+  };
 
-  const getAccurateTimeout = (callback, delay) => {
+  // Helper function that repeatedly sets an interval that should tick
+  // every ~1s, and adjusts the next tick based on the time of the previous one
+  const getAccurateInterval = (callback, delay) => {
     let nextTimer = Date.now();
 
     return function getNextTimeout() {
@@ -41,8 +53,8 @@ export default function Timer() {
   // See info on React Hooks with setInterval here:
   // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
   useEffect(() => {
-    if (timerRunning) {
-      getAccurateTimeout(() => {
+    if (timerRunning && currentTimeoutRef.current === null) {
+      getAccurateInterval(() => {
         if (currentTimerSecsRef.current > 0) {
           // Continue current timer countdown
           currentTimerSecsRef.current -= 1;
@@ -54,14 +66,15 @@ export default function Timer() {
           setWorkPhase((workPhase) => !workPhase);
         }
       }, 1000)();
-    } else {
-      // We have stopped the timer running, clear any Timeout
-      clearTimeout(currentTimeoutRef.current);
     }
 
-    // Effect Cleanup
-    return () => clearTimeout(currentTimeoutRef.current);
-  }, [timerRunning]);
+    // Effect Cleanup when Timer Stops or Component Unmounts
+    return () => {
+      console.log('CLEARING TIMEOUT');
+      clearTimeout(currentTimeoutRef.current);
+      currentTimeoutRef.current = null;
+    };
+  }, [timerRunning, workPhase]);
 
   return (
     <View style={styles.container}>
@@ -76,8 +89,10 @@ export default function Timer() {
       <TimerClock
         currentTimerSecs={currentTimerSecs}
         timerRunning={timerRunning}
-        toggleTimerRunning={toggleTimerRunning}
+        setTimerRunning={setTimerRunning}
         workPhase={workPhase}
+        setWorkPhase={setWorkPhase}
+        resetTimer={resetTimer}
       />
     </View>
   );

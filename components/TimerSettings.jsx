@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import React from 'react';
+import { Text, View, Button, TextInput } from 'react-native';
+import PropTypes from 'prop-types';
 
 const MIN_TIMER_PERIOD = 1;
 const MAX_TIMER_PERIOD = 60;
@@ -12,12 +14,8 @@ const numChars = new Set(
  * TimerSettings component contains all the timer setting controls, e.g:
  * - Set Working Time and Break Time lengths
  */
-export default function TimerSettings({
-  workMins,
-  setWorkMins,
-  breakMins,
-  setBreakMins,
-}) {
+function TimerSettings({ workMins, setWorkMins, breakMins, setBreakMins }) {
+  console.log('!!! RENDERING TimerSettings - try to memoise?');
   function handleTimerInputChange(inputText, setStateFunc) {
     // !!! Might need something more complex here to handle the input state to prevent weird behaviour when trying to get single-digit time vales
     const nums = [];
@@ -104,3 +102,12 @@ export default function TimerSettings({
     </View>
   );
 }
+
+TimerSettings.propTypes = {
+  workMins: PropTypes.number.isRequired,
+  setWorkMins: PropTypes.func.isRequired,
+  breakMins: PropTypes.number.isRequired,
+  setBreakMins: PropTypes.func.isRequired,
+};
+
+export default TimerSettings;

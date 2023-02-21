@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import React from 'react';
+import { Text, View, Button } from 'react-native';
+import PropTypes from 'prop-types';
 
 /**
  * Returns a string of 'MM:SS' from a given number of seconds for the Timer Clock
@@ -13,21 +15,39 @@ function secondsToClockString(seconds) {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
-export default function TimerClock({
+function TimerClock({
   currentTimerSecs,
   timerRunning,
-  toggleTimerRunning,
+  setTimerRunning,
+  setWorkPhase,
   workPhase,
+  resetTimer,
 }) {
   return (
     <View>
       <Text>{secondsToClockString(currentTimerSecs)}</Text>
       <Button
         title={timerRunning ? 'Pause' : 'Start'}
-        onPress={toggleTimerRunning}
+        onPress={() => setTimerRunning(!timerRunning)}
       ></Button>
+      <Button
+        title={workPhase ? 'Skip to Break' : 'Skip Break'}
+        onPress={() => setWorkPhase(!workPhase)}
+      ></Button>
+      <Button title="Reset" onPress={() => resetTimer()}></Button>
       <Text>{workPhase ? 'WORKING' : 'RESTING'}</Text>
       {/* !!! Add buttons to skip to the next phase, and reset the timer completely here */}
     </View>
   );
 }
+
+TimerClock.propTypes = {
+  currentTimerSecs: PropTypes.number.isRequired,
+  timerRunning: PropTypes.bool.isRequired,
+  setTimerRunning: PropTypes.func.isRequired,
+  setWorkPhase: PropTypes.func.isRequired,
+  workPhase: PropTypes.bool.isRequired,
+  resetTimer: PropTypes.func.isRequired,
+};
+
+export default TimerClock;
