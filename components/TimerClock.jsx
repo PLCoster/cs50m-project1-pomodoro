@@ -54,7 +54,14 @@ function TimerClock({
   console.log('!!! RENDERING TimerCLock- try to memoise?');
   return (
     <View style={styles.timerClockContainer}>
-      <Text style={styles.clockDisplay}>
+      <Text
+        style={styles.clockDisplay}
+        accessibilityLabel={`${
+          workPhase ? 'Working' : 'Break'
+        } Time Remaining: ${Math.floor(currentTimerSecs / 60)} minutes and ${
+          currentTimerSecs % 60
+        } seconds`}
+      >
         {secondsToClockString(currentTimerSecs)}
       </Text>
       <Text style={styles.phaseDisplay}>
@@ -66,6 +73,9 @@ function TimerClock({
             sharedStyles.button,
             pressed ? sharedStyles.buttonPressed : null,
           ]}
+          accessibilityLabel={`${
+            timerRunning ? 'Pause' : 'Start'
+          } the pomodoro timer`}
           onPress={() => {
             clickSound.playAsync();
             setTimerRunning(!timerRunning);
@@ -82,6 +92,9 @@ function TimerClock({
             sharedStyles.button,
             pressed ? sharedStyles.buttonPressed : null,
           ]}
+          accessibilityLabel={`Skip the remaining ${
+            workPhase ? 'Work' : 'Break'
+          } timer and skip to the ${workPhase ? 'Break' : 'Work'} phase`}
           onPress={() => {
             clickSound.playAsync();
             setWorkPhase(!workPhase);
@@ -98,6 +111,7 @@ function TimerClock({
             sharedStyles.button,
             pressed ? sharedStyles.buttonPressed : null,
           ]}
+          accessibilityLabel="Reset the timer to initial settings"
           title="Reset"
           onPress={() => {
             clickSound.playAsync();
