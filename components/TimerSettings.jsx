@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
  * - Set Working Time and Break Time lengths
  */
 function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
-  console.log('!!! RENDERING TimerSettings - try to memoise?');
   const [workingPeriodInputString, setWorkPeriodString] = useState(
     workMins.toString(),
   );
@@ -199,4 +198,4 @@ TimerSettings.propTypes = {
   clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
 };
 
-export default TimerSettings;
+export default memo(TimerSettings);

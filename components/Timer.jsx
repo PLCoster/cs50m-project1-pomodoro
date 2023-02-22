@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Text, View } from 'react-native';
 import { Audio } from 'expo-av';
 
@@ -37,34 +37,37 @@ export default function Timer() {
   const [clickSound, setClickSound] = useState(unloadedSound);
   const [alarmSound, setAlarmSound] = useState(unloadedSound);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     setTimerRunning(false);
     setWorkPhase(true);
     setWorkMins(DEFAULT_WORK_MINS);
     setBreakMins(DEFAULT_BREAK_MINS);
     setCurrentTimerSecs(DEFAULT_WORK_MINS * 60);
     currentTimerSecsRef.current = DEFAULT_WORK_MINS * 60;
-  };
+  }, []);
 
-  const updateTimer = (value, updateWorkTimer) => {
-    const validTime = Math.min(
-      Math.max(MIN_TIMER_PERIOD, value),
-      MAX_TIMER_PERIOD,
-    );
-    if (updateWorkTimer) {
-      setWorkMins(validTime);
-    } else {
-      setBreakMins(validTime);
-    }
+  const updateTimer = useCallback(
+    (value, updateWorkTimer) => {
+      const validTime = Math.min(
+        Math.max(MIN_TIMER_PERIOD, value),
+        MAX_TIMER_PERIOD,
+      );
+      if (updateWorkTimer) {
+        setWorkMins(validTime);
+      } else {
+        setBreakMins(validTime);
+      }
 
-    if (
-      !timerRunning &&
-      ((updateWorkTimer && workPhase) || (!updateWorkTimer && !workPhase))
-    ) {
-      setCurrentTimerSecs(validTime * 60);
-      currentTimerSecsRef.current = validTime * 60;
-    }
-  };
+      if (
+        !timerRunning &&
+        ((updateWorkTimer && workPhase) || (!updateWorkTimer && !workPhase))
+      ) {
+        setCurrentTimerSecs(validTime * 60);
+        currentTimerSecsRef.current = validTime * 60;
+      }
+    },
+    [timerRunning, workPhase],
+  );
 
   // Helper function that repeatedly sets an interval that should tick
   // every ~1s, and adjusts the next tick based on the time of the previous one
@@ -134,7 +137,6 @@ export default function Timer() {
           });
         } else {
           // Timer has reached 0, switch timer phase
-
           setWorkPhase((workPhase) => !workPhase);
         }
       }, 1000)();

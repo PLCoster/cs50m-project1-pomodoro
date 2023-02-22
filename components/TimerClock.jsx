@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -51,6 +51,7 @@ function TimerClock({
   resetTimer,
   clickSound,
 }) {
+  console.log('!!! RENDERING TimerCLock- try to memoise?');
   return (
     <View style={styles.timerClockContainer}>
       <Text style={styles.clockDisplay}>
@@ -124,4 +125,4 @@ TimerClock.propTypes = {
   clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
 };
 
-export default TimerClock;
+export default memo(TimerClock);
