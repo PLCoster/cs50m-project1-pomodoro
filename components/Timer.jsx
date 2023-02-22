@@ -162,6 +162,7 @@ export default function Timer() {
         updateTimer={updateTimer}
         clickSound={clickSound}
       />
+      <View style={sharedStyles.hr} />
       <TimerClock
         currentTimerSecs={currentTimerSecs}
         timerRunning={timerRunning}

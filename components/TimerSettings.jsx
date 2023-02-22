@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, TextInput } from 'react-native';
+import { Text, View, Pressable, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
+
+import sharedStyles from './styles/sharedStyles';
 
 const numChars = new Set(
   Array(10)
@@ -74,9 +76,24 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
 
   return (
     <View>
-      <Text>
-        Working Period (mins):{' '}
+      <View style={sharedStyles.flexRow}>
+        <Text style={sharedStyles.label}>Working Period (mins): </Text>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel="Decrement work period"
+          onPress={() => {
+            clickSound.playAsync();
+            updateTimer(workMins - 1, true);
+          }}
+          disabled={workMins <= MIN_TIMER_PERIOD ? true : false}
+        >
+          <Text style={sharedStyles.buttonText}>-</Text>
+        </Pressable>
         <TextInput
+          style={sharedStyles.timerPeriodInput}
           accessibilityLabel={`Set working period in minutes. Minimum: ${MIN_TIMER_PERIOD} minute. Maximum: ${MAX_TIMER_PERIOD}`}
           value={workingPeriodInputString}
           keyboardType="numeric"
@@ -87,28 +104,41 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
           onBlur={() => handleTimerInputSubmit(true)}
           maxLength={2}
         ></TextInput>
-      </Text>
-      <Button
-        title="+"
-        accessibilityLabel="Increment work period"
-        onPress={() => {
-          clickSound.playAsync();
-          updateTimer(workMins + 1, true);
-        }}
-        disabled={workMins >= MAX_TIMER_PERIOD ? true : false}
-      ></Button>
-      <Button
-        title="-"
-        accessibilityLabel="Decrement work period"
-        onPress={() => {
-          clickSound.playAsync();
-          updateTimer(workMins - 1, true);
-        }}
-        disabled={workMins <= MIN_TIMER_PERIOD ? true : false}
-      ></Button>
-      <Text>
-        Break Period (mins):{' '}
+
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel="Increment work period"
+          onPress={() => {
+            clickSound.playAsync();
+            updateTimer(workMins + 1, true);
+          }}
+          disabled={workMins >= MAX_TIMER_PERIOD ? true : false}
+        >
+          <Text style={sharedStyles.buttonText}>+</Text>
+        </Pressable>
+      </View>
+      <View style={sharedStyles.flexRow}>
+        <Text style={sharedStyles.label}>Break Period (mins): {'     '}</Text>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          title="-"
+          accessibilityLabel="Decrement break period"
+          onPress={() => {
+            clickSound.playAsync();
+            updateTimer(breakMins - 1, false);
+          }}
+          disabled={breakMins <= MIN_TIMER_PERIOD ? true : false}
+        >
+          <Text style={sharedStyles.buttonText}>-</Text>
+        </Pressable>
         <TextInput
+          style={sharedStyles.timerPeriodInput}
           accessibilityLabel={`Set break period in minutes. Minimum: ${MIN_TIMER_PERIOD} minute. Maximum: ${MAX_TIMER_PERIOD}`}
           value={breakPeriodInputString}
           keyboardType="numeric"
@@ -119,25 +149,23 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
           onBlur={() => handleTimerInputSubmit(false)}
           maxLength={2}
         ></TextInput>
-      </Text>
-      <Button
-        title="+"
-        accessibilityLabel="Increment break period"
-        onPress={() => {
-          clickSound.playAsync();
-          updateTimer(breakMins + 1, false);
-        }}
-        disabled={breakMins >= MAX_TIMER_PERIOD ? true : false}
-      ></Button>
-      <Button
-        title="-"
-        accessibilityLabel="Decrement break period"
-        onPress={() => {
-          clickSound.playAsync();
-          updateTimer(breakMins - 1, false);
-        }}
-        disabled={breakMins <= MIN_TIMER_PERIOD ? true : false}
-      ></Button>
+
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          title="+"
+          accessibilityLabel="Increment break period"
+          onPress={() => {
+            clickSound.playAsync();
+            updateTimer(breakMins + 1, false);
+          }}
+          disabled={breakMins >= MAX_TIMER_PERIOD ? true : false}
+        >
+          <Text style={sharedStyles.buttonText}>+</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

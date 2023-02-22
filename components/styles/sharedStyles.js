@@ -11,12 +11,13 @@ const sharedStyles = StyleSheet.create({
   },
   flexRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   header: {
+    marginBottom: 10,
     color: '#fff',
-    fontSize: 30,
+    fontSize: 32,
     lineHeight: 30,
     letterSpacing: 1,
     transform: 'scale(1, 1.2)',
@@ -31,13 +32,39 @@ const sharedStyles = StyleSheet.create({
     backgroundColor: '#457ca3',
   },
   hr: {
-    margin: 20,
     width: '80%',
     borderBottomColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+  label: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: '#fff',
+  },
   button: {
-    backgroundColor: 'red',
+    marginVertical: 8,
+    marginHorizontal: 12,
+    borderRadius: 5,
+    width: 32,
+
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 700,
+    userSelect: 'none',
+  },
+  timerPeriodInput: {
+    color: '#fff',
+    width: 32,
+    fontSize: 24,
   },
 });
 
