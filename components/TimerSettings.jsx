@@ -41,9 +41,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 5,
   },
-  settingSwitchThumbWorking: {
-    color: 'green',
-  },
 });
 
 /**
