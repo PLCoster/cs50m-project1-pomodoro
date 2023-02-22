@@ -51,7 +51,6 @@ function TimerClock({
   resetTimer,
   clickSound,
 }) {
-  console.log('!!! RENDERING TimerCLock- try to memoise?');
   return (
     <View style={styles.timerClockContainer}>
       <Text

@@ -36,6 +36,23 @@ export default function Timer() {
 
   const [clickSound, setClickSound] = useState(unloadedSound);
   const [alarmSound, setAlarmSound] = useState(unloadedSound);
+  const [playAlarm, setPlayAlarm] = useState(true);
+  const [vibrationOn, setVibrationOn] = useState(true);
+
+  const playAlarmRef = useRef(true);
+  const vibrationOnRef = useRef(true);
+
+  const togglePlayAlarm = useCallback(() => {
+    const nextPlayAlarm = !playAlarm;
+    setPlayAlarm(nextPlayAlarm);
+    playAlarmRef.current = nextPlayAlarm;
+  }, [playAlarm]);
+
+  const toggleVibration = useCallback(() => {
+    const nextVibration = !vibrationOn;
+    setVibrationOn(nextVibration);
+    vibrationOnRef.current = nextVibration;
+  }, [vibrationOn]);
 
   const resetTimer = useCallback(() => {
     setTimerRunning(false);
@@ -128,8 +145,8 @@ export default function Timer() {
 
           // Time is going to reach 0, play alarm and vibrate
           if (currentTimerSecsRef.current === 0) {
-            alarmSound.playAsync();
-            vibrate();
+            playAlarmRef.current ? alarmSound.playAsync() : null;
+            vibrationOnRef.current ? vibrate() : null;
           }
 
           setCurrentTimerSecs((prevSeconds) => {
@@ -161,8 +178,13 @@ export default function Timer() {
       <TimerSettings
         workMins={workMins}
         breakMins={breakMins}
+        workPhase={workPhase}
         updateTimer={updateTimer}
         clickSound={clickSound}
+        playAlarm={playAlarm}
+        togglePlayAlarm={togglePlayAlarm}
+        vibrationOn={vibrationOn}
+        toggleVibration={toggleVibration}
       />
       <View style={sharedStyles.hr} />
       <TimerClock
