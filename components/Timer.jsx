@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Audio } from 'expo-av';
 
 import TimerSettings from './TimerSettings';
 import TimerClock from './TimerClock';
 
 import vibrate from '../utils/vibrate';
+
+import sharedStyles from './styles/sharedStyles';
 
 const DEFAULT_WORK_MINS = 25;
 const DEFAULT_BREAK_MINS = 5;
@@ -146,9 +148,14 @@ export default function Timer() {
   }, [timerRunning, workPhase]);
 
   return (
-    <View style={styles.container}>
-      <Text>Pomo-do-it</Text>
-      <View style={styles.hr} />
+    <View
+      style={[
+        sharedStyles.container,
+        workPhase ? sharedStyles.workPhase : sharedStyles.breakPhase,
+      ]}
+    >
+      <Text style={sharedStyles.header}>Pomo-do-it</Text>
+      <View style={sharedStyles.hr} />
       <TimerSettings
         workMins={workMins}
         breakMins={breakMins}
@@ -167,17 +174,3 @@ export default function Timer() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hr: {
-    width: '80%',
-    borderBottomColor: 'black',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-});
