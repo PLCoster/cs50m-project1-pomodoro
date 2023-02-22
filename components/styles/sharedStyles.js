@@ -9,6 +9,9 @@ const sharedStyles = StyleSheet.create({
     paddingTop: Math.max(Constants.statusBarHeight, 20),
     transition: 'background-color 0.5s',
   },
+  fullWidth: {
+    width: '100%',
+  },
   flexRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -40,16 +43,13 @@ const sharedStyles = StyleSheet.create({
     borderBottomColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: 600,
-    color: '#fff',
-  },
+
   button: {
     marginVertical: 8,
     marginHorizontal: 12,
     borderRadius: 5,
-    width: 32,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
 
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
 
@@ -64,11 +64,6 @@ const sharedStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 700,
     userSelect: 'none',
-  },
-  timerPeriodInput: {
-    color: '#fff',
-    width: 32,
-    fontSize: 24,
   },
 });
 

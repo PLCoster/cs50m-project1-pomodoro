@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Pressable, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 
 import sharedStyles from './styles/sharedStyles';
@@ -12,6 +12,22 @@ const numChars = new Set(
 
 const MIN_TIMER_PERIOD = 1;
 const MAX_TIMER_PERIOD = 60;
+
+const styles = StyleSheet.create({
+  timerControlContainer: {
+    marginHorizontal: 20,
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: 600,
+    color: '#fff',
+  },
+  timerPeriodInput: {
+    color: '#fff',
+    width: 32,
+    fontSize: 24,
+  },
+});
 
 /**
  * TimerSettings component contains all the timer setting controls, e.g:
@@ -75,9 +91,15 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
   }
 
   return (
-    <View style={[sharedStyles.flexRow, sharedStyles.flexWrap]}>
-      <View style={sharedStyles.flexRow}>
-        <Text style={sharedStyles.label}>Working Period (mins): </Text>
+    <View
+      style={[
+        sharedStyles.flexRow,
+        sharedStyles.flexWrap,
+        sharedStyles.fullWidth,
+      ]}
+    >
+      <View style={[sharedStyles.flexRow, styles.timerControlContainer]}>
+        <Text style={styles.label}>Working Period (mins): </Text>
         <Pressable
           style={({ pressed }) => [
             sharedStyles.button,
@@ -93,7 +115,7 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
           <Text style={sharedStyles.buttonText}>-</Text>
         </Pressable>
         <TextInput
-          style={sharedStyles.timerPeriodInput}
+          style={styles.timerPeriodInput}
           accessibilityLabel={`Set working period in minutes. Minimum: ${MIN_TIMER_PERIOD} minute. Maximum: ${MAX_TIMER_PERIOD}`}
           value={workingPeriodInputString}
           keyboardType="numeric"
@@ -120,8 +142,8 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
           <Text style={sharedStyles.buttonText}>+</Text>
         </Pressable>
       </View>
-      <View style={sharedStyles.flexRow}>
-        <Text style={sharedStyles.label}>Break Period (mins): {'     '}</Text>
+      <View style={[sharedStyles.flexRow, styles.timerControlContainer]}>
+        <Text style={styles.label}>Break Period (mins): {'     '}</Text>
         <Pressable
           style={({ pressed }) => [
             sharedStyles.button,
@@ -138,7 +160,7 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
           <Text style={sharedStyles.buttonText}>-</Text>
         </Pressable>
         <TextInput
-          style={sharedStyles.timerPeriodInput}
+          style={styles.timerPeriodInput}
           accessibilityLabel={`Set break period in minutes. Minimum: ${MIN_TIMER_PERIOD} minute. Maximum: ${MAX_TIMER_PERIOD}`}
           value={breakPeriodInputString}
           keyboardType="numeric"
