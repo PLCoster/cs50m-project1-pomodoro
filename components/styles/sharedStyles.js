@@ -11,8 +11,12 @@ const sharedStyles = StyleSheet.create({
   },
   flexRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  flexWrap: {
+    flexWrap: 'wrap',
   },
   header: {
     marginBottom: 10,

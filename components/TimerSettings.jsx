@@ -75,7 +75,7 @@ function TimerSettings({ workMins, breakMins, updateTimer, clickSound }) {
   }
 
   return (
-    <View>
+    <View style={[sharedStyles.flexRow, sharedStyles.flexWrap]}>
       <View style={sharedStyles.flexRow}>
         <Text style={sharedStyles.label}>Working Period (mins): </Text>
         <Pressable
