@@ -1,6 +1,8 @@
 import React from 'react';
-import { Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
+
+import sharedStyles from './styles/sharedStyles';
 
 /**
  * Returns a string of 'MM:SS' from a given number of seconds for the Timer Clock
@@ -15,6 +17,31 @@ function secondsToClockString(seconds) {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
+const styles = StyleSheet.create({
+  timerClockContainer: {
+    alignItems: 'center',
+  },
+  clockDisplay: {
+    color: '#fff',
+    fontSize: 64,
+    fontWeight: 600,
+  },
+  phaseDisplay: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: 600,
+  },
+  timerControlContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  timerControlButtonText: {
+    fontSize: 20,
+  },
+});
+
 function TimerClock({
   currentTimerSecs,
   timerRunning,
@@ -25,30 +52,64 @@ function TimerClock({
   clickSound,
 }) {
   return (
-    <View>
-      <Text>{secondsToClockString(currentTimerSecs)}</Text>
-      <Button
-        title={timerRunning ? 'Pause' : 'Start'}
-        onPress={() => {
-          clickSound.playAsync();
-          setTimerRunning(!timerRunning);
-        }}
-      ></Button>
-      <Button
-        title={workPhase ? 'Skip to Break' : 'Skip Break'}
-        onPress={() => {
-          clickSound.playAsync();
-          setWorkPhase(!workPhase);
-        }}
-      ></Button>
-      <Button
-        title="Reset"
-        onPress={() => {
-          clickSound.playAsync();
-          resetTimer();
-        }}
-      ></Button>
-      <Text>{workPhase ? 'WORKING' : 'RESTING'}</Text>
+    <View style={styles.timerClockContainer}>
+      <Text style={styles.clockDisplay}>
+        {secondsToClockString(currentTimerSecs)}
+      </Text>
+      <Text style={styles.phaseDisplay}>
+        {workPhase ? 'WORKING' : 'RESTING'}
+      </Text>
+      <View style={styles.timerControlContainer}>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          onPress={() => {
+            clickSound.playAsync();
+            setTimerRunning(!timerRunning);
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            {timerRunning ? 'Pause' : 'Start'}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          onPress={() => {
+            clickSound.playAsync();
+            setWorkPhase(!workPhase);
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            {workPhase ? 'Skip to Break' : 'Skip Break'}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          title="Reset"
+          onPress={() => {
+            clickSound.playAsync();
+            resetTimer();
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            Reset
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
