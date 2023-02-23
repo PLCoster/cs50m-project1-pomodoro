@@ -15,7 +15,7 @@ View a demo of the project [here](https://snack.expo.dev/@plcoster/pomo-do-it) (
 - JavaScript
 - **[React](https://reactjs.org/)**, using **[React-Native](https://reactnative.dev/)** components and React Hooks for state management.
 - **[PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)** for type-checking of props
-- **[Expo](https://expo.dev/)** and **(Create-Expo-App)[https://www.npmjs.com/package/create-expo-app]** to bootstrap the app boilerplate / development process.
+- **[Expo](https://expo.dev/)** and **[Create-Expo-App](https://www.npmjs.com/package/create-expo-app)** to bootstrap the app boilerplate / development process.
 
 Sound Samples were provided by **[SampleSwap](https://sampleswap.org/)**
 
