@@ -45,13 +45,11 @@ export default function Timer() {
   const [workMins, setWorkMins] = useState(DEFAULT_WORK_MINS);
   const [breakMins, setBreakMins] = useState(DEFAULT_BREAK_MINS);
 
-  const [currentTimerMilliSecs, setCurrentTimerMilliSecs] = useState(
-    workMins * 60 * 1000,
-  );
+  const [currentTimerSecs, setCurrentTimerSecs] = useState(workMins * 60);
   const [workPhase, setWorkPhase] = useState(true);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  const currentTimerMilliSecsRef = useRef(currentTimerMilliSecs);
+  const currentTimerSecsRef = useRef(currentTimerSecs);
 
   const [clickSound, setClickSound] = useState(unloadedSound);
   const [alarmSound, setAlarmSound] = useState(unloadedSound);
@@ -78,8 +76,8 @@ export default function Timer() {
     setWorkPhase(true);
     setWorkMins(DEFAULT_WORK_MINS);
     setBreakMins(DEFAULT_BREAK_MINS);
-    setCurrentTimerMilliSecs(DEFAULT_WORK_MINS * 60);
-    currentTimerMilliSecsRef.current = DEFAULT_WORK_MINS * 60;
+    setCurrentTimerSecs(DEFAULT_WORK_MINS * 60);
+    currentTimerSecsRef.current = DEFAULT_WORK_MINS * 60;
   }, []);
 
   const updateTimer = useCallback(
@@ -98,8 +96,8 @@ export default function Timer() {
         !timerRunning &&
         ((updateWorkTimer && workPhase) || (!updateWorkTimer && !workPhase))
       ) {
-        setCurrentTimerMilliSecs(validTime * 60 * 1000);
-        currentTimerMilliSecsRef.current = validTime * 60 * 1000;
+        setCurrentTimerSecs(validTime * 60);
+        currentTimerSecsRef.current = validTime * 60;
       }
     },
     [timerRunning, workPhase],
@@ -133,11 +131,9 @@ export default function Timer() {
   // Effect to update timer countdown when phase switches work <-> break
   useEffect(() => {
     workPhase
-      ? setCurrentTimerMilliSecs(workMins * 60 * 1000)
-      : setCurrentTimerMilliSecs(breakMins * 60 * 1000);
-    currentTimerMilliSecsRef.current = workPhase
-      ? workMins * 60 * 1000
-      : breakMins * 60 * 1000;
+      ? setCurrentTimerSecs(workMins * 60)
+      : setCurrentTimerSecs(breakMins * 60);
+    currentTimerSecsRef.current = workPhase ? workMins * 60 : breakMins * 60;
   }, [workPhase]);
 
   // Custom hook which calls callback at given interval
@@ -146,28 +142,23 @@ export default function Timer() {
   // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
   useAccurateInterval(
     timerRunning,
-    useCallback(
-      (timeElapsed) => {
-        if (Math.round(currentTimerMilliSecsRef.current / 1000) >= 1) {
-          // Continue current timer countdown
-          currentTimerMilliSecsRef.current -= timeElapsed;
+    useCallback(() => {
+      if (currentTimerSecsRef.current >= 1) {
+        // Continue current timer countdown
+        currentTimerSecsRef.current -= 1;
 
-          // Time is going to reach 0, play alarm and vibrate
-          if (Math.round(currentTimerMilliSecsRef.current / 1000) < 1) {
-            playAlarmRef.current ? alarmSound.playAsync() : null;
-            vibrationOnRef.current ? vibrate() : null;
-          }
-
-          setCurrentTimerMilliSecs(() => {
-            return Math.max(currentTimerMilliSecsRef.current, 0);
-          });
-        } else {
-          // Timer has reached 0, switch timer phase
-          setWorkPhase((workPhase) => !workPhase);
+        // Time is going to reach 0, play alarm and vibrate
+        if (currentTimerSecsRef.current === 0) {
+          playAlarmRef.current ? alarmSound.playAsync() : null;
+          vibrationOnRef.current ? vibrate() : null;
         }
-      },
-      [alarmSound],
-    ),
+
+        setCurrentTimerSecs(Math.max(currentTimerSecsRef.current, 0));
+      } else {
+        // Timer has reached 0, switch timer phase
+        setWorkPhase((workPhase) => !workPhase);
+      }
+    }, [alarmSound]),
     1000,
   );
 
@@ -194,7 +185,7 @@ export default function Timer() {
       <View style={sharedStyles.hr} />
 
       {/* CLOCK AND PHASE DISPLAY */}
-      <TimerClock currentTimerMilliSecs={currentTimerMilliSecs} />
+      <TimerClock currentTimerMilliSecs={currentTimerSecs * 1000} />
       <Text style={styles.phaseDisplay}>
         {workPhase ? 'WORKING' : 'RESTING'}
       </Text>
