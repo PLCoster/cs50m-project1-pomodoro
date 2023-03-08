@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -20,6 +18,7 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
+          headerShown: false, // Hide display of Tab Navigator Top Banner
           tabBarIcon: ({ focused, color, size }) => {
             if (route.name === STOPWATCH_NAME) {
               return (
