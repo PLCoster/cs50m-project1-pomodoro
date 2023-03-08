@@ -1,6 +1,51 @@
 import React from 'react';
-import Timer from './components/Timer';
+import { View, Text, Button } from 'react-native';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+import Stopwatch from './components/Stopwatch';
+import PomoTimer from './components/PomoTimer';
+
+const STOPWATCH_NAME = 'Stopwatch';
+const POMO_NAME = 'Pomodoro Timer';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  return <Timer />;
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            if (route.name === STOPWATCH_NAME) {
+              return (
+                <MaterialIcons
+                  name="timer"
+                  size={size}
+                  color={color}
+                ></MaterialIcons>
+              );
+            } else if (route.name === POMO_NAME) {
+              return (
+                <MaterialCommunityIcons
+                  name="typewriter"
+                  size={size}
+                  color={color}
+                />
+              );
+            }
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen name={STOPWATCH_NAME} component={Stopwatch} />
+        <Tab.Screen name={POMO_NAME} component={PomoTimer} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
 }
