@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Pressable, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
 
-import TimerSettings from './TimerSettings';
+import PomoSettings from './PomoSettings';
 import TimerClock from './TimerClock';
+import useAccurateInterval from '../hooks/useAccurateInterval';
 
 import vibrate from '../utils/vibrate';
 
@@ -23,16 +24,34 @@ const unloadedSound = {
   },
 };
 
+const styles = StyleSheet.create({
+  phaseDisplay: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: 600,
+  },
+  timerControlContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  timerControlButtonText: {
+    fontSize: 20,
+  },
+});
+
 export default function Timer() {
   const [workMins, setWorkMins] = useState(DEFAULT_WORK_MINS);
   const [breakMins, setBreakMins] = useState(DEFAULT_BREAK_MINS);
 
-  const [currentTimerSecs, setCurrentTimerSecs] = useState(workMins * 60);
+  const [currentTimerMilliSecs, setCurrentTimerMilliSecs] = useState(
+    workMins * 60 * 1000,
+  );
   const [workPhase, setWorkPhase] = useState(true);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  const currentTimerSecsRef = useRef(currentTimerSecs);
-  const currentTimeoutRef = useRef();
+  const currentTimerMilliSecsRef = useRef(currentTimerMilliSecs);
 
   const [clickSound, setClickSound] = useState(unloadedSound);
   const [alarmSound, setAlarmSound] = useState(unloadedSound);
@@ -59,8 +78,8 @@ export default function Timer() {
     setWorkPhase(true);
     setWorkMins(DEFAULT_WORK_MINS);
     setBreakMins(DEFAULT_BREAK_MINS);
-    setCurrentTimerSecs(DEFAULT_WORK_MINS * 60);
-    currentTimerSecsRef.current = DEFAULT_WORK_MINS * 60;
+    setCurrentTimerMilliSecs(DEFAULT_WORK_MINS * 60);
+    currentTimerMilliSecsRef.current = DEFAULT_WORK_MINS * 60;
   }, []);
 
   const updateTimer = useCallback(
@@ -79,26 +98,12 @@ export default function Timer() {
         !timerRunning &&
         ((updateWorkTimer && workPhase) || (!updateWorkTimer && !workPhase))
       ) {
-        setCurrentTimerSecs(validTime * 60);
-        currentTimerSecsRef.current = validTime * 60;
+        setCurrentTimerMilliSecs(validTime * 60 * 1000);
+        currentTimerMilliSecsRef.current = validTime * 60 * 1000;
       }
     },
     [timerRunning, workPhase],
   );
-
-  // Helper function that repeatedly sets an interval that should tick
-  // every ~1s, and adjusts the next tick based on the time of the previous one
-  const getAccurateInterval = (callback, delay) => {
-    let nextTimer = Date.now();
-
-    return function getNextTimeout() {
-      nextTimer += delay;
-      currentTimeoutRef.current = setTimeout(() => {
-        callback();
-        getNextTimeout();
-      }, nextTimer - Date.now());
-    };
-  };
 
   // Effect to load sounds on initial Timer mount
   useEffect(() => {
@@ -128,43 +133,43 @@ export default function Timer() {
   // Effect to update timer countdown when phase switches work <-> break
   useEffect(() => {
     workPhase
-      ? setCurrentTimerSecs(workMins * 60)
-      : setCurrentTimerSecs(breakMins * 60);
-    currentTimerSecsRef.current = workPhase ? workMins * 60 : breakMins * 60;
+      ? setCurrentTimerMilliSecs(workMins * 60 * 1000)
+      : setCurrentTimerMilliSecs(breakMins * 60 * 1000);
+    currentTimerMilliSecsRef.current = workPhase
+      ? workMins * 60 * 1000
+      : breakMins * 60 * 1000;
   }, [workPhase]);
 
-  // Effect to Start / Stop Timer Clock Countdown
+  // Custom hook which calls callback at given interval
+  // Clears timeout when timer is no longer running
   // See info on React Hooks with setInterval here:
   // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-  useEffect(() => {
-    if (timerRunning && currentTimeoutRef.current === null) {
-      getAccurateInterval(() => {
-        if (currentTimerSecsRef.current > 0) {
+  useAccurateInterval(
+    timerRunning,
+    useCallback(
+      (timeElapsed) => {
+        if (Math.round(currentTimerMilliSecsRef.current / 1000) >= 1) {
           // Continue current timer countdown
-          currentTimerSecsRef.current -= 1;
+          currentTimerMilliSecsRef.current -= timeElapsed;
 
           // Time is going to reach 0, play alarm and vibrate
-          if (currentTimerSecsRef.current === 0) {
+          if (Math.round(currentTimerMilliSecsRef.current / 1000) < 1) {
             playAlarmRef.current ? alarmSound.playAsync() : null;
             vibrationOnRef.current ? vibrate() : null;
           }
 
-          setCurrentTimerSecs((prevSeconds) => {
-            return prevSeconds - 1;
+          setCurrentTimerMilliSecs(() => {
+            return Math.max(currentTimerMilliSecsRef.current, 0);
           });
         } else {
           // Timer has reached 0, switch timer phase
           setWorkPhase((workPhase) => !workPhase);
         }
-      }, 1000)();
-    }
-
-    // Effect Cleanup when Timer Stops or Component Unmounts
-    return () => {
-      clearTimeout(currentTimeoutRef.current);
-      currentTimeoutRef.current = null;
-    };
-  }, [timerRunning, workPhase]);
+      },
+      [alarmSound],
+    ),
+    1000,
+  );
 
   return (
     <View
@@ -175,7 +180,7 @@ export default function Timer() {
     >
       <Text style={sharedStyles.header}>Pomo-do-it</Text>
       <View style={sharedStyles.hr} />
-      <TimerSettings
+      <PomoSettings
         workMins={workMins}
         breakMins={breakMins}
         workPhase={workPhase}
@@ -187,15 +192,72 @@ export default function Timer() {
         toggleVibration={toggleVibration}
       />
       <View style={sharedStyles.hr} />
-      <TimerClock
-        currentTimerSecs={currentTimerSecs}
-        timerRunning={timerRunning}
-        setTimerRunning={setTimerRunning}
-        workPhase={workPhase}
-        setWorkPhase={setWorkPhase}
-        resetTimer={resetTimer}
-        clickSound={clickSound}
-      />
+
+      {/* CLOCK AND PHASE DISPLAY */}
+      <TimerClock currentTimerMilliSecs={currentTimerMilliSecs} />
+      <Text style={styles.phaseDisplay}>
+        {workPhase ? 'WORKING' : 'RESTING'}
+      </Text>
+
+      {/* TIMER CONTROLS */}
+      <View style={styles.timerControlContainer}>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel={`${
+            timerRunning ? 'Pause' : 'Start'
+          } the pomodoro timer`}
+          onPress={() => {
+            clickSound.playAsync();
+            setTimerRunning(!timerRunning);
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            {timerRunning ? 'Pause' : 'Start'}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel={`Skip the remaining ${
+            workPhase ? 'Work' : 'Break'
+          } timer and skip to the ${workPhase ? 'Break' : 'Work'} phase`}
+          onPress={() => {
+            clickSound.playAsync();
+            setWorkPhase(!workPhase);
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            {workPhase ? 'Skip to Break' : 'Skip Break'}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel="Reset the timer to initial settings"
+          title="Reset"
+          onPress={() => {
+            clickSound.playAsync();
+            resetTimer();
+          }}
+        >
+          <Text
+            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+          >
+            Reset
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

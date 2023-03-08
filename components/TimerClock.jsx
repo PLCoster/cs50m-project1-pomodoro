@@ -1,141 +1,64 @@
 import React, { memo } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable, SectionList } from 'react-native';
 import PropTypes from 'prop-types';
 
 import sharedStyles from './styles/sharedStyles';
 
 /**
- * Returns a string of 'MM:SS' from a given number of seconds for the Timer Clock
+ * Returns array containing [minutes, seconds, tenths of seconds] for the clock display, calculated from given milliseconds (ms)
  *
- * @param {number} seconds - an integer
- * @returns {string} - 'MM:SS' string representation of the given seconds
+ * @param {number} ms - an integer number of milliseconds for clock display
+ * @returns {number[]} - [minutes, seconds, tenths of seconds]
  */
-function secondsToClockString(seconds) {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
+function msToClockVals(ms) {
+  const min = Math.floor(ms / 60000);
+  const sec = Math.floor(ms / 1000) % 60;
+  const tenths = Math.floor(ms / 100) % 10;
 
-  return `${min}:${sec.toString().padStart(2, '0')}`;
+  return [min, sec, tenths];
 }
 
 const styles = StyleSheet.create({
   timerClockContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    flexDirection: 'row',
   },
   clockDisplay: {
     color: '#fff',
     fontSize: 64,
     fontWeight: 600,
   },
-  phaseDisplay: {
+  tenthsDisplay: {
     color: '#fff',
     fontSize: 32,
-    fontWeight: 600,
-  },
-  timerControlContainer: {
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  timerControlButtonText: {
-    fontSize: 20,
+    fontWeight: 500,
   },
 });
 
-function TimerClock({
-  currentTimerSecs,
-  timerRunning,
-  setTimerRunning,
-  setWorkPhase,
-  workPhase,
-  resetTimer,
-  clickSound,
-}) {
+function TimerClock({ currentTimerMilliSecs, showTenths }) {
+  const [mins, secs, tenths] = msToClockVals(currentTimerMilliSecs);
+
   return (
-    <View style={styles.timerClockContainer}>
+    <View style={[styles.timerClockContainer, styles.flexRow]}>
       <Text
         style={styles.clockDisplay}
-        accessibilityLabel={`${
-          workPhase ? 'Working' : 'Break'
-        } Time Remaining: ${Math.floor(currentTimerSecs / 60)} minutes and ${
-          currentTimerSecs % 60
+        accessibilityLabel={`
+        Clock Time: ${Math.floor(currentTimerMilliSecs / 60)} minutes and ${
+          currentTimerMilliSecs % 60
         } seconds`}
       >
-        {secondsToClockString(currentTimerSecs)}
+        {`${mins}:${secs.toString().padStart(2, '0')}`}
       </Text>
-      <Text style={styles.phaseDisplay}>
-        {workPhase ? 'WORKING' : 'RESTING'}
+      <Text style={styles.tenthsDisplay}>
+        {showTenths ? `${tenths}` : null}
       </Text>
-      <View style={styles.timerControlContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel={`${
-            timerRunning ? 'Pause' : 'Start'
-          } the pomodoro timer`}
-          onPress={() => {
-            clickSound.playAsync();
-            setTimerRunning(!timerRunning);
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
-          >
-            {timerRunning ? 'Pause' : 'Start'}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel={`Skip the remaining ${
-            workPhase ? 'Work' : 'Break'
-          } timer and skip to the ${workPhase ? 'Break' : 'Work'} phase`}
-          onPress={() => {
-            clickSound.playAsync();
-            setWorkPhase(!workPhase);
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
-          >
-            {workPhase ? 'Skip to Break' : 'Skip Break'}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel="Reset the timer to initial settings"
-          title="Reset"
-          onPress={() => {
-            clickSound.playAsync();
-            resetTimer();
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
-          >
-            Reset
-          </Text>
-        </Pressable>
-      </View>
     </View>
   );
 }
 
 TimerClock.propTypes = {
-  currentTimerSecs: PropTypes.number.isRequired,
-  timerRunning: PropTypes.bool.isRequired,
-  setTimerRunning: PropTypes.func.isRequired,
-  setWorkPhase: PropTypes.func.isRequired,
-  workPhase: PropTypes.bool.isRequired,
-  resetTimer: PropTypes.func.isRequired,
-  clickSound: PropTypes.shape({ playAsync: PropTypes.func }),
+  currentTimerMilliSecs: PropTypes.number.isRequired,
+  showTenths: PropTypes.bool,
 };
 
 export default memo(TimerClock);
