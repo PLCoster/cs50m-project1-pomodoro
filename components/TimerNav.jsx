@@ -7,6 +7,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import Timer from './Timer';
 import AddTimerScreen from './AddTimerScreen';
+import useAccurateInterval from '../hooks/useAccurateInterval';
 
 import sharedStyles from './styles/sharedStyles';
 
@@ -24,7 +25,29 @@ const styles = StyleSheet.create({
   timerContainer: { backgroundColor: '#333' },
 });
 
-function TimerHomeScreen({ navigation, timers, updateTimer }) {
+function TimerHomeScreen({ navigation, timers, setTimers, updateTimer }) {
+  useAccurateInterval(
+    true,
+    () =>
+      setTimers((currTimers) => {
+        const updatedTimers = Object.keys(currTimers).reduce(
+          (updatedTimers, timerId) => {
+            const timerDetails = currTimers[timerId];
+            if (!timerDetails.timerRunning) {
+              updatedTimers[timerDetails.id] = timerDetails;
+            } else {
+              updatedTimers[timerDetails.id] = timerDetails;
+              updatedTimers[timerDetails.id].currentTimerSeconds -= 1;
+            }
+            return updatedTimers;
+          },
+          {},
+        );
+        return updatedTimers;
+      }),
+    1000,
+  );
+
   const timerComponents = Object.values(timers).map((props) => (
     <Timer key={props.id} {...props} updateTimer={updateTimer} />
   ));
@@ -108,6 +131,7 @@ function TimerNav() {
           <TimerHomeScreen
             {...props}
             timers={timers}
+            setTimers={setTimers}
             updateTimer={updateTimer}
             deleteTimer={deleteTimer}
           />

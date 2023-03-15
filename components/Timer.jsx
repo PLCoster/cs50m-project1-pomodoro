@@ -4,7 +4,6 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 import ClockDisplay from './ClockDisplay';
-import useAccurateInterval from '../hooks/useAccurateInterval';
 
 import sharedStyles from './styles/sharedStyles';
 
@@ -46,22 +45,6 @@ function Timer({
   updateTimer,
   deleteTimer,
 }) {
-  console.log('TIMER COMPONENT: ', id);
-  useAccurateInterval(
-    timerRunning,
-    () => {
-      console.log('running update for: ', id);
-      updateTimer(id, {
-        id,
-        timerName,
-        initialTimerSeconds,
-        currentTimerSeconds: currentTimerSeconds - 1,
-        timerRunning,
-      });
-    },
-    1000,
-  );
-
   const toggleTimerRunning = () => {
     updateTimer(id, {
       id,
