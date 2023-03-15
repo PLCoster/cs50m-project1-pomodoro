@@ -3,7 +3,7 @@ import { Text, View, Pressable, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
 
 import PomoSettings from './PomoSettings';
-import TimerClock from './TimerClock';
+import ClockDisplay from './ClockDisplay';
 import useAccurateInterval from '../hooks/useAccurateInterval';
 
 import vibrate from '../utils/vibrate';
@@ -185,7 +185,7 @@ export default function Timer() {
       <View style={sharedStyles.hr} />
 
       {/* CLOCK AND PHASE DISPLAY */}
-      <TimerClock currentTimerMilliSecs={currentTimerSecs * 1000} />
+      <ClockDisplay currentTimerMilliSecs={currentTimerSecs * 1000} />
       <Text style={styles.phaseDisplay}>
         {workPhase ? 'WORKING' : 'RESTING'}
       </Text>

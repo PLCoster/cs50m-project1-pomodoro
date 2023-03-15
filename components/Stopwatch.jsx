@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 
 import useAccurateInterval from '../hooks/useAccurateInterval';
-import TimerClock from './TimerClock';
+import ClockDisplay from './ClockDisplay';
 
 import sharedStyles from './styles/sharedStyles';
 
@@ -34,7 +34,7 @@ function Stopwatch({}) {
     <View style={[sharedStyles.container, styles.stopwatchContainer]}>
       <Text style={sharedStyles.header}>Stopwatch</Text>
       <View style={sharedStyles.hr} />
-      <TimerClock
+      <ClockDisplay
         currentTimerMilliSecs={currentTimerMilliSecs}
         showTenths={true}
       />

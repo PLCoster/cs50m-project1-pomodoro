@@ -2,8 +2,6 @@ import React, { memo } from 'react';
 import { StyleSheet, Text, View, Pressable, SectionList } from 'react-native';
 import PropTypes from 'prop-types';
 
-import sharedStyles from './styles/sharedStyles';
-
 /**
  * Returns array containing [minutes, seconds, tenths of seconds] for the clock display, calculated from given milliseconds (ms)
  *
@@ -35,7 +33,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function TimerClock({ currentTimerMilliSecs, showTenths }) {
+// A simple digital clock display component
+// Displays MM:SS based on millisecond value passed in
+// Optionally can also display tenths of a second (if showTenths prop is true)
+function ClockDisplay({ currentTimerMilliSecs, showTenths }) {
   const [mins, secs, tenths] = msToClockVals(currentTimerMilliSecs);
 
   return (
@@ -56,9 +57,9 @@ function TimerClock({ currentTimerMilliSecs, showTenths }) {
   );
 }
 
-TimerClock.propTypes = {
+ClockDisplay.propTypes = {
   currentTimerMilliSecs: PropTypes.number.isRequired,
   showTenths: PropTypes.bool,
 };
 
-export default memo(TimerClock);
+export default memo(ClockDisplay);
