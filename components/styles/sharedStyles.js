@@ -21,6 +21,9 @@ const sharedStyles = StyleSheet.create({
   flexWrap: {
     flexWrap: 'wrap',
   },
+  flexJustifyBetween: {
+    justifyContent: 'space-between',
+  },
   header: {
     marginBottom: 10,
     color: '#fff',

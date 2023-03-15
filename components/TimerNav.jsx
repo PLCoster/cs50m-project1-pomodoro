@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { FontAwesome } from '@expo/vector-icons';
+
 import Timer from './Timer';
+import AddTimerScreen from './AddTimerScreen';
 
 import sharedStyles from './styles/sharedStyles';
 
@@ -21,7 +24,7 @@ const styles = StyleSheet.create({
   timerContainer: { backgroundColor: '#333' },
 });
 
-function TimerHome({ timers, updateTimer }) {
+function TimerHomeScreen({ navigation, timers, updateTimer }) {
   const timerComponents = Object.values(timers).map((props) => (
     <Timer key={props.id} {...props} updateTimer={updateTimer} />
   ));
@@ -35,6 +38,16 @@ function TimerHome({ timers, updateTimer }) {
       ) : (
         <Text>No Timers yet, try adding one!</Text>
       )}
+      <Pressable
+        style={({ pressed }) => [
+          sharedStyles.button,
+          pressed ? sharedStyles.buttonPressed : null,
+        ]}
+        accessibilityLabel={`Create a new Timer`}
+        onPress={() => navigation.navigate('AddTimer')}
+      >
+        <FontAwesome name="plus" size={40} color="white" />
+      </Pressable>
     </View>
   );
 }
@@ -47,12 +60,12 @@ function TimerNav() {
     id: getUniqueIdStr(),
     timerName: 'Test Timer 1',
     initialTimerSeconds: 300,
-    currentTimerSeconds: 300,
+    currentTimerSeconds: 1,
     timerRunning: true,
   };
   const [timers, setTimers] = useState({ [t1.id]: t1 });
 
-  // Adds a new timer to the timer object
+  // Adds a new timer to the timer object, with unique timerId
   const addTimer = (initialTimerSeconds, timerName) => {
     // Create a unique ID for this timer
     let id = getUniqueIdStr();
@@ -71,26 +84,38 @@ function TimerNav() {
     setTimers({ ...timers, [id]: timerDetails });
   };
 
-  // Allows updating a Timer's Details
+  // Allows updating a Timer's Details by its unique timerId
   const updateTimer = (timerId, timerDetails) => {
     setTimers({ ...timers, [timerId]: { ...timerDetails } });
   };
 
+  // Allows deleting a specific Timer by its unique timerId
+  const deleteTimer = (timerId) => {
+    const timerCopy = { ...timers };
+    delete timerCopy[timerId];
+    setTimers({ ...timerCopy });
+  };
+
   return (
     <Stack.Navigator
-      initialRouteName="Timer"
+      initialRouteName="TimerHomeScreen"
       screenOptions={({ route }) => ({
-        headerShown: route.name === 'Timer' ? false : true,
+        headerShown: route.name === 'TimerHomeScreen' ? false : true,
       })}
     >
-      <Stack.Screen name="Timer">
+      <Stack.Screen name="TimerHomeScreen">
         {(props) => (
-          <TimerHome {...props} timers={timers} updateTimer={updateTimer} />
+          <TimerHomeScreen
+            {...props}
+            timers={timers}
+            updateTimer={updateTimer}
+            deleteTimer={deleteTimer}
+          />
         )}
       </Stack.Screen>
-      {/* <Stack.Screen name="Add Timer">
-        {(props) => <AddTimer {...props} addTimer={addTimer} />}
-      </Stack.Screen> */}
+      <Stack.Screen name="AddTimer" options={{ title: 'Create a New Timer' }}>
+        {(props) => <AddTimerScreen {...props} addTimer={addTimer} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

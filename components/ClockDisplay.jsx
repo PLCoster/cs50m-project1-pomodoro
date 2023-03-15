@@ -45,13 +45,7 @@ function ClockDisplay({ currentTimerMilliSecs, showTenths, fontSize }) {
   fontSize = fontSize ? fontSize : 64;
 
   return (
-    <View
-      style={[
-        styles.timerClockContainer,
-        styles.flexRow,
-        { minWidth: fontSize * 2.5 },
-      ]}
-    >
+    <View style={[styles.timerClockContainer, styles.flexRow]}>
       <Text
         style={[styles.clockDisplay, { fontSize: fontSize }]}
         accessibilityLabel={`
