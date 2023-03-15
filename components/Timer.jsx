@@ -9,6 +9,7 @@ import sharedStyles from './styles/sharedStyles';
 
 const styles = StyleSheet.create({
   timerContainer: {
+    width: '80%',
     minWidth: '40%',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#fff',
@@ -21,17 +22,28 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   timerDetailsText: {
-    fontSize: 20,
+    fontSize: 16,
     color: '#fff',
+  },
+  timerResetButton: {
+    marginTop: 16,
   },
   timerLargeButtonContainer: {
     justifyContent: 'flex-end',
   },
   timerLargeButton: {
-    marginLeft: 24,
     marginRight: 0,
     paddingVertical: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
+    borderRadius: 100,
+  },
+  timerRemainingLine: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#fff',
+  },
+  timerElapsedLine: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'red',
   },
 });
 
@@ -46,7 +58,12 @@ function Timer({
   updateTimer,
   deleteTimer,
 }) {
-  console.log(initialTimerSeconds);
+  const percentTimerRemaining =
+    Math.round(
+      Math.max(currentTimerMilliSeconds / (initialTimerSeconds * 1000), 0) *
+        1000,
+    ) / 1000;
+
   const toggleTimerRunning = () => {
     updateTimer(id, {
       id,
@@ -78,7 +95,7 @@ function Timer({
           <ClockDisplay
             currentTimerMilliSecs={initialTimerSeconds * 1000}
             showTenths={false}
-            fontSize={20}
+            fontSize={16}
           />
           )
         </Text>
@@ -88,11 +105,13 @@ function Timer({
           <ClockDisplay
             currentTimerMilliSecs={currentTimerSeconds * 1000}
             showTenths={false}
+            fontSize={54}
           />
           {currentTimerSeconds < initialTimerSeconds ? (
             <Pressable
               style={({ pressed }) => [
                 sharedStyles.button,
+                styles.timerResetButton,
                 pressed ? sharedStyles.buttonPressed : null,
               ]}
               accessibilityLabel={`Reset the Timer`}
@@ -117,9 +136,9 @@ function Timer({
               onPress={toggleTimerRunning}
             >
               {timerRunning ? (
-                <FontAwesome name="pause" size={40} color="white" />
+                <FontAwesome name="pause" size={32} color="white" />
               ) : (
-                <FontAwesome name="play" size={40} color="white" />
+                <FontAwesome name="play" size={32} color="white" />
               )}
             </Pressable>
           ) : (
@@ -134,10 +153,28 @@ function Timer({
               } the timer`}
               onPress={resetTimer}
             >
-              <FontAwesome name="stop" size={40} color="white" />
+              <FontAwesome name="stop" size={32} color="white" />
             </Pressable>
           )}
         </View>
+      </View>
+      <View style={[sharedStyles.flexRow, sharedStyles.fullWidth]}>
+        <View
+          style={[
+            styles.timerRemainingLine,
+            {
+              flex: percentTimerRemaining,
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.timerElapsedLine,
+            {
+              flex: 1 - percentTimerRemaining,
+            },
+          ]}
+        />
       </View>
     </View>
   );
