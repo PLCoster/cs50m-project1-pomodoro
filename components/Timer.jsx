@@ -40,16 +40,19 @@ function Timer({
   id,
   timerName,
   initialTimerSeconds,
+  currentTimerMilliSeconds,
   currentTimerSeconds,
   timerRunning,
   updateTimer,
   deleteTimer,
 }) {
+  console.log(initialTimerSeconds);
   const toggleTimerRunning = () => {
     updateTimer(id, {
       id,
       timerName,
       initialTimerSeconds,
+      currentTimerMilliSeconds,
       currentTimerSeconds,
       timerRunning: !timerRunning,
     });
@@ -60,6 +63,7 @@ function Timer({
       id,
       timerName,
       initialTimerSeconds,
+      currentTimerMilliSeconds: initialTimerSeconds * 1000,
       currentTimerSeconds: initialTimerSeconds,
       timerRunning: false,
     });

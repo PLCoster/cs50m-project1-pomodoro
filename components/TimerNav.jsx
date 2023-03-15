@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -25,31 +25,9 @@ const styles = StyleSheet.create({
   timerContainer: { backgroundColor: '#333' },
 });
 
-function TimerHomeScreen({ navigation, timers, setTimers, updateTimer }) {
-  useAccurateInterval(
-    true,
-    () =>
-      setTimers((currTimers) => {
-        const updatedTimers = Object.keys(currTimers).reduce(
-          (updatedTimers, timerId) => {
-            const timerDetails = currTimers[timerId];
-            if (!timerDetails.timerRunning) {
-              updatedTimers[timerDetails.id] = timerDetails;
-            } else {
-              updatedTimers[timerDetails.id] = timerDetails;
-              updatedTimers[timerDetails.id].currentTimerSeconds -= 1;
-            }
-            return updatedTimers;
-          },
-          {},
-        );
-        return updatedTimers;
-      }),
-    1000,
-  );
-
-  const timerComponents = Object.values(timers).map((props) => (
-    <Timer key={props.id} {...props} updateTimer={updateTimer} />
+function TimerHomeScreen({ navigation, timers, updateTimer }) {
+  const timerComponents = Object.values(timers).map((timerProps) => (
+    <Timer key={timerProps.id} {...timerProps} updateTimer={updateTimer} />
   ));
 
   return (
@@ -83,10 +61,40 @@ function TimerNav() {
     id: getUniqueIdStr(),
     timerName: 'Test Timer 1',
     initialTimerSeconds: 300,
+    currentTimerMilliSeconds: 1 * 1000,
     currentTimerSeconds: 1,
     timerRunning: true,
   };
   const [timers, setTimers] = useState({ [t1.id]: t1 });
+
+  useAccurateInterval(
+    true,
+    useCallback(
+      () =>
+        setTimers((currTimers) => {
+          const updatedTimers = Object.keys(currTimers).reduce(
+            (updatedTimers, timerId) => {
+              const timerDetails = currTimers[timerId];
+              if (!timerDetails.timerRunning) {
+                updatedTimers[timerDetails.id] = timerDetails;
+              } else {
+                updatedTimers[timerDetails.id] = timerDetails;
+                updatedTimers[timerDetails.id].currentTimerMilliSeconds -= 100;
+                updatedTimers[timerDetails.id].currentTimerSeconds = Math.ceil(
+                  updatedTimers[timerDetails.id].currentTimerMilliSeconds /
+                    1000,
+                );
+              }
+              return updatedTimers;
+            },
+            {},
+          );
+          return updatedTimers;
+        }),
+      [],
+    ),
+    100,
+  );
 
   // Adds a new timer to the timer object, with unique timerId
   const addTimer = (initialTimerSeconds, timerName) => {
@@ -100,6 +108,7 @@ function TimerNav() {
       id,
       timerName,
       initialTimerSeconds,
+      currentTimerMilliSeconds: initialTimerSeconds * 1000,
       currentTimerSeconds: initialTimerSeconds,
       timerRunning: false,
     };
@@ -131,7 +140,6 @@ function TimerNav() {
           <TimerHomeScreen
             {...props}
             timers={timers}
-            setTimers={setTimers}
             updateTimer={updateTimer}
             deleteTimer={deleteTimer}
           />
