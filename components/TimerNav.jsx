@@ -36,7 +36,7 @@ function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
   ));
 
   return (
-    <View style={[sharedStyles.container, styles.timerContainer]}>
+    <View style={[sharedStyles.container, sharedStyles.timerBackground]}>
       <Text style={sharedStyles.header}>Timers</Text>
       <View style={sharedStyles.hr} />
       {timerComponents.length ? (
@@ -101,7 +101,7 @@ function TimerNav() {
     100,
   );
 
-  // Adds a new timer to the timer object, with unique timerId
+  // Adds a new, running timer to the timer object, with unique timerId
   const addTimer = (initialTimerSeconds, timerName) => {
     // Create a unique ID for this timer
     let id = getUniqueIdStr();
@@ -115,7 +115,7 @@ function TimerNav() {
       initialTimerSeconds,
       currentTimerMilliSeconds: initialTimerSeconds * 1000,
       currentTimerSeconds: initialTimerSeconds,
-      timerRunning: false,
+      timerRunning: true,
     };
 
     setTimers({ ...timers, [id]: timerDetails });

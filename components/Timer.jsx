@@ -106,6 +106,17 @@ function Timer({
           </Text>
         </View>
         <View style={sharedStyles.flexRow}>
+          {/* !!! <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              styles.timerControlButton,
+              pressed ? sharedStyles.buttonPressed : null,
+            ]}
+            accessibilityLabel={`Edit this Timer`}
+            onPress={() => deleteTimer(id)}
+          >
+            <FontAwesome name="trash-o" size={16} color="#fff" />
+          </Pressable> */}
           <Pressable
             style={({ pressed }) => [
               sharedStyles.button,

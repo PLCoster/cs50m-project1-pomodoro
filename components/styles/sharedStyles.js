@@ -24,6 +24,9 @@ const sharedStyles = StyleSheet.create({
   flexJustifyBetween: {
     justifyContent: 'space-between',
   },
+  flexAlignEnd: {
+    alignItems: 'flex-end',
+  },
   header: {
     marginBottom: 10,
     color: '#fff',
@@ -35,18 +38,11 @@ const sharedStyles = StyleSheet.create({
   text: {
     color: '#fff',
   },
-  workPhase: {
-    backgroundColor: '#d95550',
-  },
-  breakPhase: {
-    backgroundColor: '#457ca3',
-  },
   hr: {
     width: '80%',
     borderBottomColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-
   button: {
     marginVertical: 8,
     marginHorizontal: 12,
@@ -67,6 +63,19 @@ const sharedStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 700,
     userSelect: 'none',
+  },
+
+  // Timer Styles
+  timerBackground: {
+    backgroundColor: '#4e7a76',
+  },
+
+  // Pomodoro Timer Styles
+  workPhase: {
+    backgroundColor: '#d95550',
+  },
+  breakPhase: {
+    backgroundColor: '#457ca3',
   },
 });
 
