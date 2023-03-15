@@ -25,9 +25,14 @@ const styles = StyleSheet.create({
   timerContainer: { backgroundColor: '#333' },
 });
 
-function TimerHomeScreen({ navigation, timers, updateTimer }) {
+function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
   const timerComponents = Object.values(timers).map((timerProps) => (
-    <Timer key={timerProps.id} {...timerProps} updateTimer={updateTimer} />
+    <Timer
+      key={timerProps.id}
+      {...timerProps}
+      updateTimer={updateTimer}
+      deleteTimer={deleteTimer}
+    />
   ));
 
   return (

@@ -18,12 +18,16 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   timerDetailsContainer: {
+    padding: 4,
     justifyContent: 'space-between',
-    padding: 8,
   },
   timerDetailsText: {
     fontSize: 16,
     color: '#fff',
+  },
+  timerControlButton: {
+    marginRight: 0,
+    paddingHorizontal: 8,
   },
   timerResetButton: {
     marginTop: 16,
@@ -35,7 +39,6 @@ const styles = StyleSheet.create({
     marginRight: 0,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 100,
   },
   timerRemainingLine: {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -88,19 +91,37 @@ function Timer({
 
   return (
     <View style={styles.timerContainer}>
+      {/* TIMER NAME, INITIAL TIME AND EDIT/DELETE CONTROLS */}
       <View style={[sharedStyles.flexRow, styles.timerDetailsContainer]}>
-        <Text style={styles.timerDetailsText}>{timerName}</Text>
-        <Text style={styles.timerDetailsText}>
-          (
-          <ClockDisplay
-            currentTimerMilliSecs={initialTimerSeconds * 1000}
-            showTenths={false}
-            fontSize={16}
-          />
-          )
-        </Text>
+        <View>
+          <Text style={styles.timerDetailsText}>{timerName}</Text>
+          <Text style={styles.timerDetailsText}>
+            (
+            <ClockDisplay
+              currentTimerMilliSecs={initialTimerSeconds * 1000}
+              showTenths={false}
+              fontSize={16}
+            />
+            )
+          </Text>
+        </View>
+        <View style={sharedStyles.flexRow}>
+          <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              styles.timerControlButton,
+              pressed ? sharedStyles.buttonPressed : null,
+            ]}
+            accessibilityLabel={`Delete this Timer`}
+            onPress={() => deleteTimer(id)}
+          >
+            <FontAwesome name="trash-o" size={16} color="#fff" />
+          </Pressable>
+        </View>
       </View>
+
       <View style={[sharedStyles.flexRow, styles.timerDetailsContainer]}>
+        {/* TIMER CLOCK AND RESET BUTTON */}
         <View style={[sharedStyles.flexRow, sharedStyles.flexJustifyBetween]}>
           <ClockDisplay
             currentTimerMilliSecs={currentTimerSeconds * 1000}
@@ -122,6 +143,7 @@ function Timer({
           ) : null}
         </View>
 
+        {/* PAUSE / START / STOP BUTTON */}
         <View style={styles.largeButtonContainer}>
           {currentTimerSeconds > 0 ? (
             <Pressable
@@ -158,6 +180,8 @@ function Timer({
           )}
         </View>
       </View>
+
+      {/* GRAPHICAL TIMER DISPLAY */}
       <View style={[sharedStyles.flexRow, sharedStyles.fullWidth]}>
         <View
           style={[
