@@ -9,6 +9,9 @@ import PropTypes from 'prop-types';
  * @returns {number[]} - [minutes, seconds, tenths of seconds]
  */
 function msToClockVals(ms) {
+  if (ms < 0) {
+    ms = Math.abs(ms);
+  }
   const min = Math.floor(ms / 60000);
   const sec = Math.floor(ms / 1000) % 60;
   const tenths = Math.floor(ms / 100) % 10;
@@ -23,12 +26,12 @@ const styles = StyleSheet.create({
   },
   clockDisplay: {
     color: '#fff',
-    fontSize: 64,
+    // fontSize: 64,
     fontWeight: 600,
   },
   tenthsDisplay: {
     color: '#fff',
-    fontSize: 32,
+    // fontSize: 32,
     fontWeight: 500,
   },
 });
@@ -36,21 +39,31 @@ const styles = StyleSheet.create({
 // A simple digital clock display component
 // Displays MM:SS based on millisecond value passed in
 // Optionally can also display tenths of a second (if showTenths prop is true)
-function ClockDisplay({ currentTimerMilliSecs, showTenths }) {
+function ClockDisplay({ currentTimerMilliSecs, showTenths, fontSize }) {
   const [mins, secs, tenths] = msToClockVals(currentTimerMilliSecs);
 
+  fontSize = fontSize ? fontSize : 64;
+
   return (
-    <View style={[styles.timerClockContainer, styles.flexRow]}>
+    <View
+      style={[
+        styles.timerClockContainer,
+        styles.flexRow,
+        { minWidth: fontSize * 2.5 },
+      ]}
+    >
       <Text
-        style={styles.clockDisplay}
+        style={[styles.clockDisplay, { fontSize: fontSize }]}
         accessibilityLabel={`
         Clock Time: ${Math.floor(currentTimerMilliSecs / 60)} minutes and ${
           currentTimerMilliSecs % 60
         } seconds`}
       >
-        {`${mins}:${secs.toString().padStart(2, '0')}`}
+        {`${currentTimerMilliSecs < 0 ? '-' : ''}${mins}:${secs
+          .toString()
+          .padStart(2, '0')}`}
       </Text>
-      <Text style={styles.tenthsDisplay}>
+      <Text style={[styles.tenthsDisplay, { fontSize: fontSize / 2 }]}>
         {showTenths ? `${tenths}` : null}
       </Text>
     </View>
@@ -60,6 +73,7 @@ function ClockDisplay({ currentTimerMilliSecs, showTenths }) {
 ClockDisplay.propTypes = {
   currentTimerMilliSecs: PropTypes.number.isRequired,
   showTenths: PropTypes.bool,
+  fontSize: PropTypes.number,
 };
 
 export default memo(ClockDisplay);
