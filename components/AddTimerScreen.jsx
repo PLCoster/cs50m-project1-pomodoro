@@ -30,7 +30,6 @@ const NUM_CHARS = new Set(
  * @param {boolean} secondInput
  */
 function validateTimeInput(valueStr, setterFunc, secondInput = false) {
-  console.log('validating input!');
   const nums = [];
 
   for (const char of valueStr) {
@@ -100,7 +99,11 @@ function AddTimerScreen({ navigation, addTimer }) {
           accessibilityLabel={`Create a new Timer`}
           onPress={() => {
             addTimer(timerMins * 60 + timerSecs, 'New Timer From Button');
-            navigation.navigate('TimerHomeScreen');
+            // Navigate back to the TimerHomeScreen, ensuring it is the bottom screen on the stack
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'TimerHomeScreen' }],
+            });
           }}
         >
           <FontAwesome name="play" size={32} color="white" />

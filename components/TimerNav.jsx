@@ -1,15 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { FontAwesome } from '@expo/vector-icons';
-
-import Timer from './Timer';
+import TimerHomeScreen from './TimerHomeScreen';
 import AddTimerScreen from './AddTimerScreen';
 import useAccurateInterval from '../hooks/useAccurateInterval';
-
-import sharedStyles from './styles/sharedStyles';
 
 const getUniqueIdStr = () => {
   const chars =
@@ -21,59 +16,18 @@ const getUniqueIdStr = () => {
   return selected.join('');
 };
 
-const styles = StyleSheet.create({
-  timerContainer: { backgroundColor: '#333' },
-});
-
-function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
-  const timerComponents = Object.values(timers).map((timerProps) => (
-    <Timer
-      key={timerProps.id}
-      {...timerProps}
-      updateTimer={updateTimer}
-      deleteTimer={deleteTimer}
-    />
-  ));
-
-  return (
-    <View style={[sharedStyles.container, sharedStyles.timerBackground]}>
-      <Text style={sharedStyles.header}>Timers</Text>
-      <View style={sharedStyles.hr} />
-      {timerComponents.length ? (
-        timerComponents
-      ) : (
-        <Text>No Timers yet, try adding one!</Text>
-      )}
-      <Pressable
-        style={({ pressed }) => [
-          sharedStyles.button,
-          pressed ? sharedStyles.buttonPressed : null,
-        ]}
-        accessibilityLabel={`Create a new Timer`}
-        onPress={() => navigation.navigate('AddTimer')}
-      >
-        <FontAwesome name="plus" size={40} color="white" />
-      </Pressable>
-    </View>
-  );
-}
-
 const Stack = createNativeStackNavigator();
 
 function TimerNav() {
-  // !!! Remove placeholder timers
-  const t1 = {
-    id: getUniqueIdStr(),
-    timerName: 'Test Timer 1',
-    initialTimerSeconds: 300,
-    currentTimerMilliSeconds: 1 * 1000,
-    currentTimerSeconds: 1,
-    timerRunning: true,
-  };
-  const [timers, setTimers] = useState({ [t1.id]: t1 });
+  const [timers, setTimers] = useState({});
 
   useAccurateInterval(
-    true,
+    Object.values(timers).reduce((anyTimerRunning, timer) => {
+      if (anyTimerRunning || timer.timerRunning) {
+        return true;
+      }
+      return anyTimerRunning;
+    }, false),
     useCallback(
       () =>
         setTimers((currTimers) => {
@@ -150,7 +104,10 @@ function TimerNav() {
           />
         )}
       </Stack.Screen>
-      <Stack.Screen name="AddTimer" options={{ title: 'Create a New Timer' }}>
+      <Stack.Screen
+        name="AddTimerScreen"
+        options={{ title: 'Create a New Timer' }}
+      >
         {(props) => <AddTimerScreen {...props} addTimer={addTimer} />}
       </Stack.Screen>
     </Stack.Navigator>

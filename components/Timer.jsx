@@ -6,6 +6,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import ClockDisplay from './ClockDisplay';
 
 import sharedStyles from './styles/sharedStyles';
+import TimerHomeScreen from './TimerHomeScreen';
 
 const styles = StyleSheet.create({
   timerContainer: {
@@ -52,6 +53,7 @@ const styles = StyleSheet.create({
 
 // A single Timer to be displayed on the TimerHome Screen
 function Timer({
+  navigation,
   id,
   timerName,
   initialTimerSeconds,
