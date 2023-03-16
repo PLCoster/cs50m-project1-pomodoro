@@ -7,9 +7,13 @@ import Timer from './Timer';
 
 import sharedStyles from './styles/sharedStyles';
 
-function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
-  console.log('CALLING TIMER HOME SCREEN', timers);
+const DEFAULT_NEW_TIMER_PARAMS = {
+  timerID: null,
+  initTimerName: 'New Timer - 5m00s',
+  initTimerSecs: 300,
+};
 
+function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
   const timerComponents = Object.values(timers).map((timerProps) => (
     <Timer
       key={timerProps.id}
@@ -26,7 +30,7 @@ function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
     if (Object.keys(timers).length === 0) {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'AddTimerScreen' }],
+        routes: [{ name: 'AddTimerScreen', params: DEFAULT_NEW_TIMER_PARAMS }],
       });
     }
   }, [navigation, timers]);
@@ -51,7 +55,9 @@ function TimerHomeScreen({ navigation, timers, updateTimer, deleteTimer }) {
             pressed ? sharedStyles.buttonPressed : null,
           ]}
           accessibilityLabel={`Create a new Timer`}
-          onPress={() => navigation.navigate('AddTimerScreen')}
+          onPress={() =>
+            navigation.navigate('AddTimerScreen', DEFAULT_NEW_TIMER_PARAMS)
+          }
         >
           <FontAwesome name="plus" size={40} color="white" />
         </Pressable>

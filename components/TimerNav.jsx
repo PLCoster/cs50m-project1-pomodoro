@@ -108,7 +108,13 @@ function TimerNav() {
         name="AddTimerScreen"
         options={{ title: 'Create a New Timer' }}
       >
-        {(props) => <AddTimerScreen {...props} addTimer={addTimer} />}
+        {(props) => (
+          <AddTimerScreen
+            {...props}
+            addTimer={addTimer}
+            updateTimer={updateTimer}
+          />
+        )}
       </Stack.Screen>
     </Stack.Navigator>
   );

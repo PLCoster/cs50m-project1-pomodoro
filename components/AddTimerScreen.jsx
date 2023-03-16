@@ -6,7 +6,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import sharedStyles from './styles/sharedStyles';
 
 const styles = StyleSheet.create({
+  timerNameInput: {
+    textAlign: 'center',
+    fontSize: 40,
+    color: '#fff',
+  },
   timerValueInput: {
+    textAlign: 'right',
     fontSize: 64,
     width: 72,
     justifyContent: 'flex-end',
@@ -31,36 +37,83 @@ const NUM_CHARS = new Set(
  */
 function validateTimeInput(valueStr, setterFunc, secondInput = false) {
   const nums = [];
-
   for (const char of valueStr) {
     if (NUM_CHARS.has(char)) {
       nums.push(char);
     }
   }
-
   const numVal = nums.length > 0 ? parseInt(nums.join('')) : 0;
   secondInput ? setterFunc(Math.min(numVal, 99)) : setterFunc(numVal);
 }
 
-function AddTimerScreen({ navigation, addTimer }) {
-  const [timerMins, setTimerMins] = useState(5);
-  const [timerSecs, setTimerSecs] = useState(0);
+/**
+ * Small helper function that returns the number of digits of given number
+ * @param {number} num
+ * @returns {number} The number of decimal digits in num
+ */
+function numDigits(num) {
+  let digits = 0;
+  while (num > 0) {
+    num = Math.floor(num / 10);
+    digits += 1;
+  }
+  return Math.max(digits, 2);
+}
 
-  const numDigits = (num) => {
-    let digits = 0;
+function AddTimerScreen({ route, navigation, addTimer, updateTimer }) {
+  const { timerID, initTimerName, initTimerSecs } = route.params;
 
-    while (num > 0) {
-      num = Math.floor(num / 10);
-      digits += 1;
-    }
+  const [timerName, setTimerName] = useState(initTimerName);
+  const [timerNameChanged, setTimerNameChanged] = useState(false);
 
-    return Math.max(digits, 2);
-  };
+  const [timerMins, setTimerMins] = useState(Math.floor(initTimerSecs / 60));
+  const [timerSecs, setTimerSecs] = useState(initTimerSecs % 60);
 
   const totalTimerSecs = timerMins * 60 + timerSecs;
 
+  function handleAddOrEditTimerSubmit() {
+    const name =
+      (timerNameChanged || timerID !== null) && timerName !== ''
+        ? timerName
+        : `${timerMins.toString()}m${timerSecs
+            .toString()
+            .padStart(2, 0)}s Timer`;
+
+    const initialTimerSeconds = timerMins * 60 + timerSecs;
+    if (!timerID) {
+      // Create a brand new timer
+      addTimer(timerMins * 60 + timerSecs, name);
+    } else {
+      // Edit an existing timer
+      updateTimer(timerID, {
+        id: timerID,
+        timerName,
+        initialTimerSeconds,
+        currentTimerMilliSeconds: initialTimerSeconds * 1000,
+        currentTimerSeconds: initialTimerSeconds,
+        timerRunning: true,
+      });
+    }
+
+    // Navigate back to the TimerHomeScreen, ensuring it is the bottom screen on the stack
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'TimerHomeScreen' }],
+    });
+  }
+
   return (
     <View style={[sharedStyles.container, sharedStyles.timerBackground]}>
+      <TextInput
+        style={styles.timerNameInput}
+        accessibilityLabel={`Set Timer Name`}
+        value={timerName}
+        onChangeText={(inputText) => {
+          console.log(inputText);
+          setTimerNameChanged(true);
+          setTimerName(inputText);
+        }}
+      />
       <View style={[sharedStyles.flexRow, sharedStyles.flexAlignEnd]}>
         <TextInput
           style={[
@@ -75,7 +128,7 @@ function AddTimerScreen({ navigation, addTimer }) {
             validateTimeInput(inputText, setTimerMins)
           }
           maxLength={3}
-        ></TextInput>
+        />
         <Text style={[sharedStyles.text, styles.timerInputLabel]}>m</Text>
         <TextInput
           style={[sharedStyles.text, styles.timerValueInput]}
@@ -85,7 +138,7 @@ function AddTimerScreen({ navigation, addTimer }) {
           onChangeText={(inputText) =>
             validateTimeInput(inputText, setTimerSecs, true)
           }
-        ></TextInput>
+        />
         <Text style={[sharedStyles.text, styles.timerInputLabel]}>s</Text>
       </View>
 
@@ -97,14 +150,7 @@ function AddTimerScreen({ navigation, addTimer }) {
             pressed ? sharedStyles.buttonPressed : null,
           ]}
           accessibilityLabel={`Create a new Timer`}
-          onPress={() => {
-            addTimer(timerMins * 60 + timerSecs, 'New Timer From Button');
-            // Navigate back to the TimerHomeScreen, ensuring it is the bottom screen on the stack
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'TimerHomeScreen' }],
-            });
-          }}
+          onPress={() => handleAddOrEditTimerSubmit()}
         >
           <FontAwesome name="play" size={32} color="white" />
         </Pressable>

@@ -6,11 +6,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import ClockDisplay from './ClockDisplay';
 
 import sharedStyles from './styles/sharedStyles';
-import TimerHomeScreen from './TimerHomeScreen';
 
 const styles = StyleSheet.create({
   timerContainer: {
     width: '80%',
+    maxWidth: 200,
     minWidth: '40%',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#fff',
@@ -108,17 +108,23 @@ function Timer({
           </Text>
         </View>
         <View style={sharedStyles.flexRow}>
-          {/* !!! <Pressable
+          <Pressable
             style={({ pressed }) => [
               sharedStyles.button,
               styles.timerControlButton,
               pressed ? sharedStyles.buttonPressed : null,
             ]}
             accessibilityLabel={`Edit this Timer`}
-            onPress={() => deleteTimer(id)}
+            onPress={() =>
+              navigation.navigate('AddTimerScreen', {
+                timerID: id,
+                initTimerName: timerName,
+                initTimerSecs: initialTimerSeconds,
+              })
+            }
           >
-            <FontAwesome name="trash-o" size={16} color="#fff" />
-          </Pressable> */}
+            <FontAwesome name="edit" size={16} color="#fff" />
+          </Pressable>
           <Pressable
             style={({ pressed }) => [
               sharedStyles.button,
