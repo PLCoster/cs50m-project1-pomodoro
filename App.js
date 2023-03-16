@@ -5,7 +5,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+  FontAwesome,
+} from '@expo/vector-icons';
 
 import Stopwatch from './components/Stopwatch';
 import TimerNav from './components/TimerNav';
@@ -32,16 +36,15 @@ export default function App() {
                   color={color}
                 ></MaterialIcons>
               );
-            } else if (route.name === POMO_NAME) {
+            } else if (route.name === TIMER_NAME) {
               return (
-                <MaterialCommunityIcons
-                  name="typewriter"
-                  size={size}
-                  color={color}
-                />
+                <FontAwesome name="hourglass-2" size={size - 4} color={color} />
               );
+            } else if (route.name === POMO_NAME) {
+              return <FontAwesome name="edit" size={size - 4} color={color} />;
             }
           },
+
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
         })}
