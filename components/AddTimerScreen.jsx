@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Text, View, Pressable, TextInput, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 
 import { AudioContext } from '../App';
 import { TimerContext } from './TimerNav';
@@ -115,7 +116,6 @@ function AddTimerScreen({ route, navigation }) {
         accessibilityLabel={`Set Timer Name`}
         value={timerName}
         onChangeText={(inputText) => {
-          console.log(inputText);
           setTimerNameChanged(true);
           setTimerName(inputText);
         }}
@@ -167,5 +167,19 @@ function AddTimerScreen({ route, navigation }) {
     </View>
   );
 }
+
+AddTimerScreen.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      timerID: PropTypes.string.isRequired,
+      initTimerName: PropTypes.string.isRequired,
+      initTimerSecs: PropTypes.number.isRequired,
+    }),
+  }),
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    reset: PropTypes.func.isRequired,
+  }),
+};
 
 export default AddTimerScreen;

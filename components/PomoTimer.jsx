@@ -21,15 +21,6 @@ const DEFAULT_BREAK_MINS = 5;
 const MIN_TIMER_PERIOD = 1;
 const MAX_TIMER_PERIOD = 60;
 
-const unloadedSound = {
-  playAsync: () => {
-    console.log('No sounds loaded');
-  },
-  unloadAsync: () => {
-    console.log('No sounds loaded to be unloaded');
-  },
-};
-
 const styles = StyleSheet.create({
   phaseDisplay: {
     color: '#fff',

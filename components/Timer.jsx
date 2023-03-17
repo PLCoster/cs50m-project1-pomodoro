@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -235,5 +236,19 @@ function Timer({
     </View>
   );
 }
+
+Timer.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }),
+  id: PropTypes.string.isRequired,
+  timerName: PropTypes.string.isRequired,
+  initialTimerSeconds: PropTypes.number.isRequired,
+  currentTimerMilliSeconds: PropTypes.number.isRequired,
+  currentTimerSeconds: PropTypes.number.isRequired,
+  timerRunning: PropTypes.bool.isRequired,
+  updateTimer: PropTypes.func.isRequired,
+  deleteTimer: PropTypes.func.isRequired,
+};
 
 export default Timer;

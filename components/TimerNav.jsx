@@ -7,6 +7,8 @@ import AddTimerScreen from './AddTimerScreen';
 import useAccurateInterval from '../hooks/useAccurateInterval';
 import { AudioContext } from '../App';
 
+import vibrate from '../utils/vibrate';
+
 const getUniqueIdStr = () => {
   const chars =
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -29,7 +31,7 @@ const Stack = createNativeStackNavigator();
 function TimerNav() {
   const [timers, setTimers] = useState({});
 
-  const { clickSound, alarmSound } = useContext(AudioContext);
+  const { alarmSound } = useContext(AudioContext);
 
   useAccurateInterval(
     Object.values(timers).reduce((anyTimerRunning, timer) => {
@@ -54,9 +56,13 @@ function TimerNav() {
                     1000,
                 );
 
-                updatedTimers[timerDetails.id].currentTimerMilliSeconds === 0
-                  ? alarmSound.playAsync()
-                  : null;
+                // If a timer reaches zero, then play sound and vibrate
+                if (
+                  updatedTimers[timerDetails.id].currentTimerMilliSeconds === 0
+                ) {
+                  alarmSound.playAsync();
+                  vibrate();
+                }
               }
               return updatedTimers;
             },
@@ -64,7 +70,7 @@ function TimerNav() {
           );
           return updatedTimers;
         }),
-      [],
+      [alarmSound],
     ),
     100,
   );
@@ -115,15 +121,8 @@ function TimerNav() {
         <Stack.Screen
           name="AddTimerScreen"
           options={{ title: 'Create a New Timer' }}
-        >
-          {(props) => (
-            <AddTimerScreen
-              {...props}
-              addTimer={addTimer}
-              updateTimer={updateTimer}
-            />
-          )}
-        </Stack.Screen>
+          component={AddTimerScreen}
+        />
       </Stack.Navigator>
     </TimerContext.Provider>
   );

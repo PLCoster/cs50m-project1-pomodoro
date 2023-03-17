@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, Text, View, Pressable, SectionList } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
@@ -81,6 +81,7 @@ ClockDisplay.propTypes = {
   currentTimerMilliSecs: PropTypes.number.isRequired,
   showTenths: PropTypes.bool,
   fontSize: PropTypes.number,
+  fontColor: PropTypes.string,
 };
 
 export default memo(ClockDisplay);

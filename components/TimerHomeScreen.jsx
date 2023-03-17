@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { View, ScrollView, Text, Pressable, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -77,5 +78,12 @@ function TimerHomeScreen({ navigation }) {
     </View>
   );
 }
+
+TimerHomeScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    reset: PropTypes.func.isRequired,
+  }),
+};
 
 export default TimerHomeScreen;
