@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TimerHomeScreen from './TimerHomeScreen';
 import AddTimerScreen from './AddTimerScreen';
 import useAccurateInterval from '../hooks/useAccurateInterval';
+import { AudioContext } from '../App';
 
 const getUniqueIdStr = () => {
   const chars =
@@ -16,10 +17,19 @@ const getUniqueIdStr = () => {
   return selected.join('');
 };
 
+export const TimerContext = React.createContext({
+  timers: {},
+  addTimer: () => {},
+  updateTimer: () => {},
+  deleteTimer: () => {},
+});
+
 const Stack = createNativeStackNavigator();
 
 function TimerNav() {
   const [timers, setTimers] = useState({});
+
+  const { clickSound, alarmSound } = useContext(AudioContext);
 
   useAccurateInterval(
     Object.values(timers).reduce((anyTimerRunning, timer) => {
@@ -43,6 +53,10 @@ function TimerNav() {
                   updatedTimers[timerDetails.id].currentTimerMilliSeconds /
                     1000,
                 );
+
+                updatedTimers[timerDetails.id].currentTimerMilliSeconds === 0
+                  ? alarmSound.playAsync()
+                  : null;
               }
               return updatedTimers;
             },
@@ -88,35 +102,30 @@ function TimerNav() {
   };
 
   return (
-    <Stack.Navigator
-      initialRouteName="TimerHomeScreen"
-      screenOptions={({ route }) => ({
-        headerShown: route.name === 'TimerHomeScreen' ? false : true,
-      })}
+    <TimerContext.Provider
+      value={{ timers, addTimer, updateTimer, deleteTimer }}
     >
-      <Stack.Screen name="TimerHomeScreen">
-        {(props) => (
-          <TimerHomeScreen
-            {...props}
-            timers={timers}
-            updateTimer={updateTimer}
-            deleteTimer={deleteTimer}
-          />
-        )}
-      </Stack.Screen>
-      <Stack.Screen
-        name="AddTimerScreen"
-        options={{ title: 'Create a New Timer' }}
+      <Stack.Navigator
+        initialRouteName="TimerHomeScreen"
+        screenOptions={({ route }) => ({
+          headerShown: route.name === 'TimerHomeScreen' ? false : true,
+        })}
       >
-        {(props) => (
-          <AddTimerScreen
-            {...props}
-            addTimer={addTimer}
-            updateTimer={updateTimer}
-          />
-        )}
-      </Stack.Screen>
-    </Stack.Navigator>
+        <Stack.Screen name="TimerHomeScreen" component={TimerHomeScreen} />
+        <Stack.Screen
+          name="AddTimerScreen"
+          options={{ title: 'Create a New Timer' }}
+        >
+          {(props) => (
+            <AddTimerScreen
+              {...props}
+              addTimer={addTimer}
+              updateTimer={updateTimer}
+            />
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </TimerContext.Provider>
   );
 }
 

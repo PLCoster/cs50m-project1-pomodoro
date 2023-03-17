@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Text, View, Pressable, TextInput, StyleSheet } from 'react-native';
+
+import { TimerContext } from './TimerNav';
 
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -60,7 +62,8 @@ function numDigits(num) {
   return Math.max(digits, 2);
 }
 
-function AddTimerScreen({ route, navigation, addTimer, updateTimer }) {
+function AddTimerScreen({ route, navigation }) {
+  const { addTimer, updateTimer } = useContext(TimerContext);
   const { timerID, initTimerName, initTimerSecs } = route.params;
 
   const [timerName, setTimerName] = useState(initTimerName);

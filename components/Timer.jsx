@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#fff',
     borderRadius: 5,
-    marginTop: 8,
+    marginVertical: 8,
     padding: 8,
   },
   timerDetailsContainer: {

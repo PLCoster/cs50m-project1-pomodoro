@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 
-import useAccurateInterval from '../hooks/useAccurateInterval';
 import ClockDisplay from './ClockDisplay';
+import useAccurateInterval from '../hooks/useAccurateInterval';
+import { AudioContext } from '../App';
 
 import sharedStyles from './styles/sharedStyles';
 
@@ -10,9 +11,11 @@ const styles = StyleSheet.create({
   stopwatchContainer: { backgroundColor: '#333' },
 });
 
-function Stopwatch({}) {
+function Stopwatch() {
   const [currentTimerMilliSecs, setCurrentTimerMilliSecs] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  const { clickSound } = useContext(AudioContext);
 
   const resetTimer = () => {
     setCurrentTimerMilliSecs(0);
@@ -48,6 +51,7 @@ function Stopwatch({}) {
             timerRunning ? 'Pause' : 'Start'
           } the pomodoro timer`}
           onPress={() => {
+            clickSound.playAsync();
             setTimerRunning(!timerRunning);
           }}
         >
@@ -65,6 +69,7 @@ function Stopwatch({}) {
           accessibilityLabel="Reset the timer to initial settings"
           title="Reset"
           onPress={() => {
+            clickSound.playAsync();
             resetTimer();
           }}
         >
