@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Text, View, Pressable, TextInput, StyleSheet } from 'react-native';
 
+import { AudioContext } from '../App';
 import { TimerContext } from './TimerNav';
 
 import { FontAwesome } from '@expo/vector-icons';
@@ -64,6 +65,8 @@ function numDigits(num) {
 
 function AddTimerScreen({ route, navigation }) {
   const { addTimer, updateTimer } = useContext(TimerContext);
+  const { clickSound } = useContext(AudioContext);
+
   const { timerID, initTimerName, initTimerSecs } = route.params;
 
   const [timerName, setTimerName] = useState(initTimerName);
@@ -153,7 +156,10 @@ function AddTimerScreen({ route, navigation }) {
             pressed ? sharedStyles.buttonPressed : null,
           ]}
           accessibilityLabel={`Create a new Timer`}
-          onPress={() => handleAddOrEditTimerSubmit()}
+          onPress={() => {
+            clickSound.playAsync();
+            handleAddOrEditTimerSubmit();
+          }}
         >
           <FontAwesome name="play" size={32} color="white" />
         </Pressable>

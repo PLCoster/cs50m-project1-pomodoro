@@ -39,7 +39,12 @@ const styles = StyleSheet.create({
 // A simple digital clock display component
 // Displays MM:SS based on millisecond value passed in
 // Optionally can also display tenths of a second (if showTenths prop is true)
-function ClockDisplay({ currentTimerMilliSecs, showTenths, fontSize }) {
+function ClockDisplay({
+  currentTimerMilliSecs,
+  showTenths,
+  fontSize,
+  fontColor,
+}) {
   const [mins, secs, tenths] = msToClockVals(currentTimerMilliSecs);
 
   fontSize = fontSize ? fontSize : 64;
@@ -47,7 +52,10 @@ function ClockDisplay({ currentTimerMilliSecs, showTenths, fontSize }) {
   return (
     <View style={[styles.timerClockContainer, styles.flexRow]}>
       <Text
-        style={[styles.clockDisplay, { fontSize: fontSize }]}
+        style={[
+          styles.clockDisplay,
+          { fontSize: fontSize, color: fontColor || '#fff' },
+        ]}
         accessibilityLabel={`
         Clock Time: ${Math.floor(currentTimerMilliSecs / 60)} minutes and ${
           currentTimerMilliSecs % 60
@@ -57,7 +65,12 @@ function ClockDisplay({ currentTimerMilliSecs, showTenths, fontSize }) {
           .toString()
           .padStart(2, '0')}`}
       </Text>
-      <Text style={[styles.tenthsDisplay, { fontSize: fontSize / 2 }]}>
+      <Text
+        style={[
+          styles.tenthsDisplay,
+          { fontSize: fontSize / 2, color: fontColor || '#fff' },
+        ]}
+      >
         {showTenths ? `${tenths}` : null}
       </Text>
     </View>

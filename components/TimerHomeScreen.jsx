@@ -68,9 +68,9 @@ function TimerHomeScreen({ navigation }) {
           pressed ? sharedStyles.buttonPressed : null,
         ]}
         accessibilityLabel={`Create a new Timer`}
-        onPress={() =>
-          navigation.navigate('AddTimerScreen', DEFAULT_NEW_TIMER_PARAMS)
-        }
+        onPress={() => {
+          navigation.navigate('AddTimerScreen', DEFAULT_NEW_TIMER_PARAMS);
+        }}
       >
         <FontAwesome name="plus" size={40} color="white" />
       </Pressable>

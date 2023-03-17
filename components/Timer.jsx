@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import { FontAwesome } from '@expo/vector-icons';
 
 import ClockDisplay from './ClockDisplay';
+import { AudioContext } from '../App';
 
 import sharedStyles from './styles/sharedStyles';
+
+const DEFAULT_COLOR = '#fff';
+const TIMER_ELAPSED_COLOR = '#e98b1e';
 
 const styles = StyleSheet.create({
   timerContainer: {
@@ -13,7 +17,7 @@ const styles = StyleSheet.create({
     maxWidth: 200,
     minWidth: '40%',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#fff',
+    borderColor: DEFAULT_COLOR,
     borderRadius: 5,
     marginVertical: 8,
     padding: 8,
@@ -24,7 +28,7 @@ const styles = StyleSheet.create({
   },
   timerDetailsText: {
     fontSize: 16,
-    color: '#fff',
+    color: DEFAULT_COLOR,
   },
   timerControlButton: {
     marginRight: 0,
@@ -42,12 +46,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   timerRemainingLine: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: DEFAULT_COLOR,
   },
   timerElapsedLine: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'red',
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomColor: TIMER_ELAPSED_COLOR,
   },
 });
 
@@ -63,6 +67,8 @@ function Timer({
   updateTimer,
   deleteTimer,
 }) {
+  const { clickSound } = useContext(AudioContext);
+
   const percentTimerRemaining =
     Math.round(
       Math.max(currentTimerMilliSeconds / (initialTimerSeconds * 1000), 0) *
@@ -115,15 +121,15 @@ function Timer({
               pressed ? sharedStyles.buttonPressed : null,
             ]}
             accessibilityLabel={`Edit this Timer`}
-            onPress={() =>
+            onPress={() => {
               navigation.navigate('AddTimerScreen', {
                 timerID: id,
                 initTimerName: timerName,
                 initTimerSecs: initialTimerSeconds,
-              })
-            }
+              });
+            }}
           >
-            <FontAwesome name="edit" size={16} color="#fff" />
+            <FontAwesome name="edit" size={16} color={DEFAULT_COLOR} />
           </Pressable>
           <Pressable
             style={({ pressed }) => [
@@ -132,9 +138,12 @@ function Timer({
               pressed ? sharedStyles.buttonPressed : null,
             ]}
             accessibilityLabel={`Delete this Timer`}
-            onPress={() => deleteTimer(id)}
+            onPress={() => {
+              clickSound.playAsync();
+              deleteTimer(id);
+            }}
           >
-            <FontAwesome name="trash-o" size={16} color="#fff" />
+            <FontAwesome name="trash-o" size={16} color={DEFAULT_COLOR} />
           </Pressable>
         </View>
       </View>
@@ -146,6 +155,7 @@ function Timer({
             currentTimerMilliSecs={currentTimerSeconds * 1000}
             showTenths={false}
             fontSize={54}
+            fontColor={currentTimerSeconds <= 0 ? TIMER_ELAPSED_COLOR : null}
           />
           {currentTimerSeconds < initialTimerSeconds ? (
             <Pressable
@@ -155,9 +165,9 @@ function Timer({
                 pressed ? sharedStyles.buttonPressed : null,
               ]}
               accessibilityLabel={`Reset the Timer`}
-              onPress={resetTimer}
+              onPress={() => resetTimer()}
             >
-              <FontAwesome name="repeat" size={24} color="white" />
+              <FontAwesome name="repeat" size={24} color={DEFAULT_COLOR} />
             </Pressable>
           ) : null}
         </View>
@@ -174,12 +184,15 @@ function Timer({
               accessibilityLabel={`${
                 timerRunning ? 'Pause' : 'Start'
               } the timer`}
-              onPress={toggleTimerRunning}
+              onPress={() => {
+                clickSound.playAsync();
+                toggleTimerRunning();
+              }}
             >
               {timerRunning ? (
-                <FontAwesome name="pause" size={32} color="white" />
+                <FontAwesome name="pause" size={32} color={DEFAULT_COLOR} />
               ) : (
-                <FontAwesome name="play" size={32} color="white" />
+                <FontAwesome name="play" size={32} color={DEFAULT_COLOR} />
               )}
             </Pressable>
           ) : (
@@ -189,12 +202,12 @@ function Timer({
                 styles.timerLargeButton,
                 pressed ? sharedStyles.buttonPressed : null,
               ]}
-              accessibilityLabel={`${
-                timerRunning ? 'Pause' : 'Start'
-              } the timer`}
-              onPress={resetTimer}
+              accessibilityLabel={`Stop the timer`}
+              onPress={() => {
+                resetTimer();
+              }}
             >
-              <FontAwesome name="stop" size={32} color="white" />
+              <FontAwesome name="stop" size={32} color={DEFAULT_COLOR} />
             </Pressable>
           )}
         </View>
