@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext,
+} from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
-import { Audio } from 'expo-av';
 
 import PomoSettings from './PomoSettings';
 import ClockDisplay from './ClockDisplay';
+import { AudioContext } from '../App';
 import useAccurateInterval from '../hooks/useAccurateInterval';
 
 import vibrate from '../utils/vibrate';
@@ -51,8 +57,7 @@ export default function Timer() {
 
   const currentTimerSecsRef = useRef(currentTimerSecs);
 
-  const [clickSound, setClickSound] = useState(unloadedSound);
-  const [alarmSound, setAlarmSound] = useState(unloadedSound);
+  const { clickSound, alarmSound } = useContext(AudioContext);
   const [playAlarm, setPlayAlarm] = useState(true);
   const [vibrationOn, setVibrationOn] = useState(true);
 
@@ -102,31 +107,6 @@ export default function Timer() {
     },
     [timerRunning, workPhase],
   );
-
-  // Effect to load sounds on initial Timer mount
-  useEffect(() => {
-    (async function loadClickSound() {
-      try {
-        const { sound: click } = await Audio.Sound.createAsync(
-          require('../assets/sounds/fingersnap.mp3'),
-        );
-        const { sound: alarm } = await Audio.Sound.createAsync(
-          require('../assets/sounds/watch_alarm.mp3'),
-        );
-
-        console.log('Sounds Loaded!');
-        setClickSound(click);
-        setAlarmSound(alarm);
-      } catch (err) {
-        console.error('Error when trying to load sounds: ', err);
-      }
-    })();
-
-    return () => {
-      clickSound.unloadAsync();
-      alarmSound.unloadAsync();
-    };
-  }, []);
 
   // Effect to update timer countdown when phase switches work <-> break
   useEffect(() => {
