@@ -37,9 +37,6 @@ const styles = StyleSheet.create({
   timerResetButton: {
     marginTop: 16,
   },
-  timerLargeButtonContainer: {
-    justifyContent: 'flex-end',
-  },
   timerLargeButton: {
     marginRight: 0,
     paddingVertical: 8,
