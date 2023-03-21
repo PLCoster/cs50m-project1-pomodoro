@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   addTimerButton: {
     position: 'absolute',
     right: 40,
-    bottom: 40,
+    bottom: 60,
   },
 });
 
@@ -60,7 +60,8 @@ function TimerHomeScreen({ navigation }) {
         ) : (
           <Text style={sharedStyles.text}>No Timers yet, try adding one!</Text>
         )}
-        <View style={{ padding: 16 }} />
+        {/* View element to pad bottom of ScrollView */}
+        <View style={{ padding: 32 }} />
       </ScrollView>
       <Pressable
         style={({ pressed }) => [

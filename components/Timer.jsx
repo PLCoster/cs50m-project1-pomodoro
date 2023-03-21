@@ -14,9 +14,8 @@ const TIMER_ELAPSED_COLOR = '#e98b1e';
 
 const styles = StyleSheet.create({
   timerContainer: {
-    width: '80%',
-    maxWidth: 200,
-    minWidth: '40%',
+    width: '60%',
+    minWidth: 200,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: DEFAULT_COLOR,
     borderRadius: 5,
@@ -158,19 +157,18 @@ function Timer({
             fontSize={54}
             fontColor={currentTimerSeconds <= 0 ? TIMER_ELAPSED_COLOR : null}
           />
-          {currentTimerSeconds < initialTimerSeconds ? (
-            <Pressable
-              style={({ pressed }) => [
-                sharedStyles.button,
-                styles.timerResetButton,
-                pressed ? sharedStyles.buttonPressed : null,
-              ]}
-              accessibilityLabel={`Reset the Timer`}
-              onPress={() => resetTimer()}
-            >
-              <FontAwesome name="repeat" size={24} color={DEFAULT_COLOR} />
-            </Pressable>
-          ) : null}
+          <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              styles.timerResetButton,
+              pressed ? sharedStyles.buttonPressed : null,
+              // {display: }
+            ]}
+            accessibilityLabel={`Reset the Timer`}
+            onPress={() => resetTimer()}
+          >
+            <FontAwesome name="repeat" size={24} color={DEFAULT_COLOR} />
+          </Pressable>
         </View>
 
         {/* PAUSE / START / STOP BUTTON */}

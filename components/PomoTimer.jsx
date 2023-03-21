@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useContext,
 } from 'react';
-import { Text, View, Pressable, StyleSheet } from 'react-native';
+import { Text, View, ScrollView, Pressable, StyleSheet } from 'react-native';
 
 import PomoSettings from './PomoSettings';
 import ClockDisplay from './ClockDisplay';
@@ -136,90 +136,94 @@ export default function Timer() {
   return (
     <View
       style={[
-        sharedStyles.container,
         workPhase ? sharedStyles.workPhase : sharedStyles.breakPhase,
+        { flex: 1 },
       ]}
     >
-      <Text style={sharedStyles.header}>Pomo-do-it</Text>
-      <View style={sharedStyles.hr} />
-      <PomoSettings
-        workMins={workMins}
-        breakMins={breakMins}
-        workPhase={workPhase}
-        updateTimer={updateTimer}
-        clickSound={clickSound}
-        playAlarm={playAlarm}
-        togglePlayAlarm={togglePlayAlarm}
-        vibrationOn={vibrationOn}
-        toggleVibration={toggleVibration}
-      />
-      <View style={sharedStyles.hr} />
+      <ScrollView contentContainerStyle={sharedStyles.container}>
+        <Text style={sharedStyles.header}>Pomo-do-it</Text>
+        <View style={sharedStyles.hr} />
+        <PomoSettings
+          workMins={workMins}
+          breakMins={breakMins}
+          workPhase={workPhase}
+          updateTimer={updateTimer}
+          clickSound={clickSound}
+          playAlarm={playAlarm}
+          togglePlayAlarm={togglePlayAlarm}
+          vibrationOn={vibrationOn}
+          toggleVibration={toggleVibration}
+        />
+        <View style={sharedStyles.hr} />
 
-      {/* CLOCK AND PHASE DISPLAY */}
-      <ClockDisplay currentTimerMilliSecs={currentTimerSecs * 1000} />
-      <Text style={styles.phaseDisplay}>
-        {workPhase ? 'WORKING' : 'RESTING'}
-      </Text>
+        {/* CLOCK AND PHASE DISPLAY */}
+        <ClockDisplay currentTimerMilliSecs={currentTimerSecs * 1000} />
+        <Text style={styles.phaseDisplay}>
+          {workPhase ? 'WORKING' : 'RESTING'}
+        </Text>
 
-      {/* TIMER CONTROLS */}
-      <View style={styles.timerControlContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel={`${
-            timerRunning ? 'Pause' : 'Start'
-          } the pomodoro timer`}
-          onPress={() => {
-            clickSound.playAsync();
-            setTimerRunning(!timerRunning);
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+        {/* TIMER CONTROLS */}
+        <View style={styles.timerControlContainer}>
+          <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              pressed ? sharedStyles.buttonPressed : null,
+            ]}
+            accessibilityLabel={`${
+              timerRunning ? 'Pause' : 'Start'
+            } the pomodoro timer`}
+            onPress={() => {
+              clickSound.playAsync();
+              setTimerRunning(!timerRunning);
+            }}
           >
-            {timerRunning ? 'Pause' : 'Start'}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel={`Skip the remaining ${
-            workPhase ? 'Work' : 'Break'
-          } timer and skip to the ${workPhase ? 'Break' : 'Work'} phase`}
-          onPress={() => {
-            clickSound.playAsync();
-            setWorkPhase(!workPhase);
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+            <Text
+              style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+            >
+              {timerRunning ? 'Pause' : 'Start'}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              pressed ? sharedStyles.buttonPressed : null,
+            ]}
+            accessibilityLabel={`Skip the remaining ${
+              workPhase ? 'Work' : 'Break'
+            } timer and skip to the ${workPhase ? 'Break' : 'Work'} phase`}
+            onPress={() => {
+              clickSound.playAsync();
+              setWorkPhase(!workPhase);
+            }}
           >
-            {workPhase ? 'Skip to Break' : 'Skip Break'}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            sharedStyles.button,
-            pressed ? sharedStyles.buttonPressed : null,
-          ]}
-          accessibilityLabel="Reset the timer to initial settings"
-          title="Reset"
-          onPress={() => {
-            clickSound.playAsync();
-            resetTimer();
-          }}
-        >
-          <Text
-            style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+            <Text
+              style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+            >
+              {workPhase ? 'Skip to Break' : 'Skip Break'}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              sharedStyles.button,
+              pressed ? sharedStyles.buttonPressed : null,
+            ]}
+            accessibilityLabel="Reset the timer to initial settings"
+            title="Reset"
+            onPress={() => {
+              clickSound.playAsync();
+              resetTimer();
+            }}
           >
-            Reset
-          </Text>
-        </Pressable>
-      </View>
+            <Text
+              style={[sharedStyles.buttonText, styles.timerControlButtonText]}
+            >
+              Reset
+            </Text>
+          </Pressable>
+        </View>
+        {/* View element to pad bottom of ScrollView */}
+        <View style={{ padding: 32 }} />
+      </ScrollView>
     </View>
   );
 }

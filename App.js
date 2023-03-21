@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -27,6 +28,14 @@ const unloadedSound = {
 export const AudioContext = React.createContext({
   clickSound: unloadedSound,
   alarmSound: unloadedSound,
+});
+
+const styles = StyleSheet.create({
+  tabNavView: {
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingBottom: 8,
+  },
 });
 
 const Tab = createBottomTabNavigator();
@@ -67,32 +76,60 @@ export default function App() {
         <Tab.Navigator
           screenOptions={({ route }) => ({
             headerShown: false, // Hide display of Tab Navigator Top Banner
+            tabBarShowLabel: false, // hide screen name from tab bar button
+            tabBarStyle: {
+              borderTop: 'none',
+              backgroundColor: 'transparent',
+              position: 'absolute',
+              left: 0,
+              bottom: 0,
+            },
+            tabBarBackground: () => {
+              <View style={{ backgroundColor: 'red' }}></View>;
+            },
             tabBarIcon: ({ focused, color, size }) => {
               if (route.name === STOPWATCH_NAME) {
                 return (
-                  <MaterialIcons
-                    name="timer"
-                    size={size}
-                    color={color}
-                  ></MaterialIcons>
+                  <View style={styles.tabNavView}>
+                    <MaterialIcons
+                      name="timer"
+                      size={size + 4}
+                      color={color}
+                    ></MaterialIcons>
+                    <Text
+                      style={{
+                        marginTop: -4,
+                        color: color,
+                        fontSize: size / 2,
+                      }}
+                    >
+                      Stopwatch
+                    </Text>
+                  </View>
                 );
               } else if (route.name === TIMER_NAME) {
                 return (
-                  <FontAwesome
-                    name="hourglass-2"
-                    size={size - 4}
-                    color={color}
-                  />
+                  <View style={styles.tabNavView}>
+                    <FontAwesome name="hourglass-2" size={size} color={color} />
+                    <Text style={{ color: color, fontSize: size / 2 }}>
+                      Timer
+                    </Text>
+                  </View>
                 );
               } else if (route.name === POMO_NAME) {
                 return (
-                  <FontAwesome name="edit" size={size - 4} color={color} />
+                  <View style={styles.tabNavView}>
+                    <FontAwesome name="edit" size={size} color={color} />
+                    <Text style={{ color: color, fontSize: size / 2 }}>
+                      Pomodoro
+                    </Text>
+                  </View>
                 );
               }
             },
 
-            tabBarActiveTintColor: 'tomato',
-            tabBarInactiveTintColor: 'gray',
+            tabBarActiveTintColor: '#fff',
+            tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
           })}
         >
           <Tab.Screen name={STOPWATCH_NAME} component={Stopwatch} />
