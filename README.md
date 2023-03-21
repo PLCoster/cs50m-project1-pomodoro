@@ -2,7 +2,7 @@
 
 ## CS50 Mobile App Development with React Native
 
-![](./pomo-do-it3.png)
+![](./pomo-do-it.png)
 
 ### Project Aims:
 
