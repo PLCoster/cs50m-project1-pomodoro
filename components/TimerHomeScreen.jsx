@@ -16,10 +16,9 @@ const DEFAULT_NEW_TIMER_PARAMS = {
 };
 
 const styles = StyleSheet.create({
-  addTimerButton: {
-    position: 'absolute',
-    right: 40,
-    bottom: 60,
+  addTimerContainer: {
+    alignItems: 'center',
+    padding: 8,
   },
 });
 
@@ -48,7 +47,9 @@ function TimerHomeScreen({ navigation }) {
   }, [navigation, timers]);
 
   return (
-    <View style={[sharedStyles.timerBackground, { flex: 1 }]}>
+    <View
+      style={[sharedStyles.timerBackground, sharedStyles.scrollViewContainer]}
+    >
       <ScrollView
         contentContainerStyle={[sharedStyles.container, sharedStyles.fullWidth]}
       >
@@ -60,22 +61,21 @@ function TimerHomeScreen({ navigation }) {
         ) : (
           <Text style={sharedStyles.text}>No Timers yet, try adding one!</Text>
         )}
-        {/* View element to pad bottom of ScrollView */}
-        <View style={{ padding: 32 }} />
       </ScrollView>
-      <Pressable
-        style={({ pressed }) => [
-          styles.addTimerButton,
-          sharedStyles.button,
-          pressed ? sharedStyles.buttonPressed : null,
-        ]}
-        accessibilityLabel={`Create a new Timer`}
-        onPress={() => {
-          navigation.navigate('AddTimerScreen', DEFAULT_NEW_TIMER_PARAMS);
-        }}
-      >
-        <FontAwesome name="plus" size={40} color="white" />
-      </Pressable>
+      <View style={styles.addTimerContainer}>
+        <Pressable
+          style={({ pressed }) => [
+            sharedStyles.button,
+            pressed ? sharedStyles.buttonPressed : null,
+          ]}
+          accessibilityLabel={`Create a new Timer`}
+          onPress={() => {
+            navigation.navigate('AddTimerScreen', DEFAULT_NEW_TIMER_PARAMS);
+          }}
+        >
+          <FontAwesome name="plus" size={40} color="white" />
+        </Pressable>
+      </View>
     </View>
   );
 }

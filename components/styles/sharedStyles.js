@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
 const sharedStyles = StyleSheet.create({
+  scrollViewContainer: {
+    flex: 1,
+    paddingBottom: 64,
+  },
   container: {
     flex: 1,
     alignItems: 'center',

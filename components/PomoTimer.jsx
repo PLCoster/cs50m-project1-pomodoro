@@ -137,7 +137,7 @@ export default function Timer() {
     <View
       style={[
         workPhase ? sharedStyles.workPhase : sharedStyles.breakPhase,
-        { flex: 1 },
+        sharedStyles.scrollViewContainer,
       ]}
     >
       <ScrollView contentContainerStyle={sharedStyles.container}>
@@ -221,8 +221,6 @@ export default function Timer() {
             </Text>
           </Pressable>
         </View>
-        {/* View element to pad bottom of ScrollView */}
-        <View style={{ padding: 32 }} />
       </ScrollView>
     </View>
   );

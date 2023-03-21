@@ -15,7 +15,7 @@ const TIMER_ELAPSED_COLOR = '#e98b1e';
 const styles = StyleSheet.create({
   timerContainer: {
     width: '60%',
-    minWidth: 200,
+    minWidth: 280,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: DEFAULT_COLOR,
     borderRadius: 5,
