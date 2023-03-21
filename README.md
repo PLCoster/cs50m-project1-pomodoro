@@ -11,7 +11,7 @@ The aim of this project was to build a [Pomodoro Timer](https://en.wikipedia.org
 Beyond this initial specification, the app also allows users to switch to 'Stopwatch' and 'Timer' tabs:
 
 - The 'Stopwatch' tab has a simple stopwatch functionality, users can start, pause and reset the stopwatch, which counts in minutes, seconds and tenths of seconds.
-- The 'Timer' tab allows uses to create one or multiple timers, with customisable names and lengths, that count down individually and can also be stopped / started / edited as desired.
+- The 'Timer' tab allows users to create one or multiple timers, with customisable names and lengths, that count down individually and can also be stopped / started / edited as desired.
 
 View a demo of the project [here](https://snack.expo.dev/@plcoster/pomo-do-it) (select web or iOS)
 
